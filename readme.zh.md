@@ -12,6 +12,8 @@
   <img src="https://img.shields.io/badge/license-MIT-green" alt="License" />
 </p>
 
+**语言 / Language:** [中文](readme.zh.md) | [English](readme.md)
+
 ---
 
 ## 📖 什么是 OpenBuddy？
