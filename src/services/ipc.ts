@@ -5,6 +5,7 @@ import type {
   AgentTextDelta,
   AgentToolCallEvent,
   AgentToolResultEvent,
+  ModelConfig,
 } from '../types'
 
 // ==================== ElectronAPI 接口（内联定义，避免跨项目引用 electron/preload.ts）====================
@@ -13,7 +14,7 @@ interface ElectronAPI {
     taskId: string
     userMessage: string
     mode: 'ask' | 'craft' | 'plan'
-    modelId: string
+    modelConfig: ModelConfig
     workspacePath: string
     historyMessages: Array<{
       role: string
@@ -77,7 +78,7 @@ function mockAgentExecute(params: {
   taskId: string
   userMessage: string
   mode: 'ask' | 'craft' | 'plan'
-  modelId: string
+  modelConfig: ModelConfig
   workspacePath: string
   historyMessages: Array<{
     role: string

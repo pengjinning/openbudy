@@ -6,8 +6,9 @@ body,
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #141414;
-  color: rgba(255, 255, 255, 0.85);
+  /* 底色由 App 层按主题注入 body.style.background，这里保持透明 */
+  background: transparent;
+  color: inherit;
 }
 
 * {
@@ -55,7 +56,32 @@ body,
   -webkit-app-region: no-drag;
 }
 
-/* ==================== Markdown 样式 ==================== */
+/* 弹窗（Modal/Drawer 等）打开期间挂起所有拖拽区：
+   Electron 的 drag 命中按几何矩形在合成器层判定，浮层无法遮挡，
+   必须临时降级为 no-drag，否则弹窗内的真实鼠标点击会被吞掉 */
+body.app-drag-suspended .app-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* ==================== Markdown 样式（主题自适应） ====================
+   antd ConfigProvider 会在 body 上挂 theme-light / theme-dark 类，
+   借助 CSS 变量让 markdown 区域适配两套主题 */
+body {
+  --md-pre-bg: #1f1f1f;
+  --md-code-bg: rgba(255, 255, 255, 0.08);
+  --md-border: rgba(255, 255, 255, 0.15);
+  --md-quote-border: rgba(255, 255, 255, 0.2);
+  --md-quote-text: rgba(255, 255, 255, 0.6);
+}
+
+body.theme-light {
+  --md-pre-bg: #f6f8fa;
+  --md-code-bg: rgba(0, 0, 0, 0.06);
+  --md-border: rgba(0, 0, 0, 0.15);
+  --md-quote-border: rgba(0, 0, 0, 0.2);
+  --md-quote-text: rgba(0, 0, 0, 0.55);
+}
+
 .markdown-body {
   font-size: 14px;
   line-height: 1.7;
@@ -67,7 +93,7 @@ body,
 }
 
 .markdown-body pre {
-  background: #1f1f1f;
+  background: var(--md-pre-bg);
   border-radius: 6px;
   padding: 12px;
   overflow: auto;
@@ -80,7 +106,7 @@ body,
 }
 
 .markdown-body :not(pre) > code {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--md-code-bg);
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -92,13 +118,13 @@ body,
 
 .markdown-body th,
 .markdown-body td {
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--md-border);
   padding: 6px 12px;
 }
 
 .markdown-body blockquote {
-  border-left: 3px solid rgba(255, 255, 255, 0.2);
+  border-left: 3px solid var(--md-quote-border);
   padding-left: 12px;
   margin: 8px 0;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--md-quote-text);
 }

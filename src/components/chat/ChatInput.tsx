@@ -11,6 +11,7 @@ import { useTaskStore } from '../../stores/taskStore'
 import { useAgent } from '../../hooks/useAgent'
 import { useFileUpload } from '../../hooks/useFileUpload'
 import { useSettingsStore } from '../../stores/settingsStore'
+import { useThemeToken } from '../../hooks/useThemeToken'
 import { ipc } from '../../services/ipc'
 
 const ACCEPT =
@@ -22,6 +23,7 @@ export default function ChatInput() {
   const task = tasks.find((t) => t.id === selectedTaskId)
   const { execute, isRunning, stop } = useAgent(selectedTaskId)
   const { upload, uploading } = useFileUpload(selectedTaskId)
+  const { token } = useThemeToken()
   const modelsConfig = useSettingsStore((s) => s.modelsConfig)
   const [value, setValue] = useState('')
   const [mode, setMode] = useState<TaskMode>(task?.mode ?? 'ask')
@@ -92,9 +94,9 @@ export default function ChatInput() {
   return (
     <div
       style={{
-        borderTop: '1px solid rgba(255,255,255,0.06)',
+        borderTop: `1px solid ${token.colorSplit}`,
         padding: 12,
-        background: 'rgba(255,255,255,0.02)',
+        background: token.colorBgContainer,
       }}
     >
       <Input.TextArea

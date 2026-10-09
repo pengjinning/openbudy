@@ -15,6 +15,8 @@ import {
 import type { Task, TaskStatus } from '../../types'
 import { useTaskStore } from '../../stores/taskStore'
 import { useTask } from '../../hooks/useTask'
+import { useThemeToken } from '../../hooks/useThemeToken'
+import { useDragSuspension } from '../../hooks/useDragSuspension'
 
 const { Text } = Typography
 
@@ -23,7 +25,7 @@ const STATUS_ICON: Record<
   { icon: React.ReactNode; color: string }
 > = {
   planning: { icon: <ClockCircleOutlined />, color: '#fa8c16' },
-  running: { icon: <LoadingOutlined />, color: '#1677ff' },
+  running: { icon: <LoadingOutlined />, color: '#1677ff' }, // 与 antd colorPrimary 一致
   completed: { icon: <CheckCircleOutlined />, color: '#52c41a' },
   failed: { icon: <CloseCircleOutlined />, color: '#ff4d4f' },
   archived: { icon: <InboxOutlined />, color: '#8c8c8c' },
@@ -46,7 +48,10 @@ export default function TaskCard({ task }: { task: Task }) {
   const selectTask = useTaskStore((s) => s.selectTask)
   const selectedTaskId = useTaskStore((s) => s.selectedTaskId)
   const { archive, togglePin, remove, update } = useTask()
+  const { token } = useThemeToken()
   const [renameOpen, setRenameOpen] = useState(false)
+
+  useDragSuspension(renameOpen)
   const [renameValue, setRenameValue] = useState(task.title)
 
   const statusInfo = STATUS_ICON[task.status]
@@ -111,11 +116,11 @@ export default function TaskCard({ task }: { task: Task }) {
             marginBottom: 6,
             cursor: 'pointer',
             border: selected
-              ? '1px solid #1677ff'
-              : '1px solid rgba(255,255,255,0.06)',
+              ? `1px solid ${token.colorPrimary}`
+              : `1px solid ${token.colorSplit}`,
             background: selected
-              ? 'rgba(22, 119, 255, 0.1)'
-              : 'rgba(255,255,255,0.02)',
+              ? token.colorPrimaryBg
+              : token.colorBgContainer,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -127,7 +132,7 @@ export default function TaskCard({ task }: { task: Task }) {
                 ellipsis
                 style={{
                   display: 'block',
-                  color: 'rgba(255,255,255,0.85)',
+                  color: token.colorText,
                 }}
               >
                 {task.pinned && (

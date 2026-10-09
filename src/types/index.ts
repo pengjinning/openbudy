@@ -119,8 +119,10 @@ export interface ModelsConfig {
 }
 
 // ==================== 设置类型 ====================
+export type ThemeSetting = 'light' | 'dark' | 'system'
+
 export interface AppSettings {
-  theme: 'light' | 'dark'
+  theme: ThemeSetting
   modelsConfig: ModelsConfig
   workspaceRoot: string
 }

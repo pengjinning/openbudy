@@ -3,8 +3,10 @@ import ChatHeader from '../chat/ChatHeader'
 import MessageList from '../chat/MessageList'
 import ChatInput from '../chat/ChatInput'
 import { useTaskStore } from '../../stores/taskStore'
+import { useThemeToken } from '../../hooks/useThemeToken'
 
 export default function ChatArea() {
+  const { token } = useThemeToken()
   const selectedTaskId = useTaskStore((s) => s.selectedTaskId)
 
   if (!selectedTaskId) {
@@ -17,7 +19,7 @@ export default function ChatArea() {
         style={{ height: '100%', gap: 12 }}
       >
         <Empty description="尚未选择任务" />
-        <div style={{ color: 'rgba(255,255,255,0.45)' }}>
+        <div style={{ color: token.colorTextTertiary }}>
           创建一个新任务开始
         </div>
       </Flex>

@@ -1,15 +1,18 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import type { ModelConfig } from '../../src/types'
+
+export interface AgentExecuteParams {
+  taskId: string
+  userMessage: string
+  mode: 'ask' | 'craft' | 'plan'
+  modelConfig: ModelConfig
+  workspacePath: string
+  historyMessages: Array<{ role: string; content: string; toolCalls?: unknown[]; toolResults?: unknown[] }>
+}
 
 export interface ElectronAPI {
   // Agent
-  agentExecute: (params: {
-    taskId: string
-    userMessage: string
-    mode: 'ask' | 'craft' | 'plan'
-    modelId: string
-    workspacePath: string
-    historyMessages: Array<{ role: string; content: string; toolCalls?: unknown[]; toolResults?: unknown[] }>
-  }) => Promise<{ success: boolean; error?: string }>
+  agentExecute: (params: AgentExecuteParams) => Promise<{ success: boolean; error?: string }>
   agentStop: (taskId: string) => void
   onAgentEvent: (callback: (event: unknown) => void) => () => void
 

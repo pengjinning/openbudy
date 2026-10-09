@@ -1,6 +1,6 @@
 import type { ToolCall, ToolResult, ToolExecutionContext } from '../src/types'
 import { toolRegistry } from './tools/registry'
-import { validateCommand } from './sandbox'
+import { validateCommand, validatePath } from './sandbox'
 import path from 'path'
 
 /**
@@ -49,7 +49,6 @@ export async function executeTools(
       if (relPath) {
         const fullPath = path.resolve(context.workspacePath, relPath)
         // 复用 sandbox 内逻辑：路径必须位于工作区内
-        const { validatePath } = await import('./sandbox')
         if (!validatePath(context.workspacePath, fullPath)) {
           results.push({
             toolCallId: call.id,

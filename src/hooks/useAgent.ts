@@ -119,7 +119,21 @@ export function useAgent(taskId: string | null): UseAgentReturn {
       }
 
       const modelsConfig = settingsStore.getState().modelsConfig
-      const modelId = task.modelId || modelsConfig.defaultModel
+      // 优先用任务绑定的模型，其次全局默认模型
+      const modelConfig =
+        modelsConfig.models.find((m) => m.id === task.modelId) ??
+        modelsConfig.models.find((m) => m.id === modelsConfig.defaultModel) ??
+        modelsConfig.models[0]
+      if (!modelConfig) {
+        antdMessage.error('未配置任何模型，请先在设置中添加模型')
+        return
+      }
+      if (!modelConfig.apiKey) {
+        antdMessage.error(
+          `模型 ${modelConfig.name || modelConfig.id} 未配置 API Key，请在设置中填写`
+        )
+        return
+      }
 
       // 1. 添加用户消息
       const userMsg: Message = {
@@ -155,7 +169,7 @@ export function useAgent(taskId: string | null): UseAgentReturn {
         taskId,
         userMessage,
         mode: task.mode,
-        modelId,
+        modelConfig,
         workspacePath: task.workspacePath,
         historyMessages,
       })

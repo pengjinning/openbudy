@@ -7,6 +7,7 @@ import rehypeHighlight from 'rehype-highlight'
 import 'highlight.js/styles/github-dark.css'
 import type { Message } from '../../types'
 import ToolCallCard from './ToolCallCard'
+import { useThemeToken } from '../../hooks/useThemeToken'
 
 interface MessageItemProps {
   message: Message
@@ -41,6 +42,7 @@ function CodeBlock({ children, className }: { children?: React.ReactNode; classN
 export default function MessageItem({ message }: MessageItemProps) {
   const isUser = message.role === 'user'
   const avatar = isUser ? <UserOutlined /> : <RobotOutlined />
+  const { token } = useThemeToken()
 
   const alignStyle: React.CSSProperties = {
     display: 'flex',
@@ -52,15 +54,15 @@ export default function MessageItem({ message }: MessageItemProps) {
   const bubbleStyle: React.CSSProperties = isUser
     ? {
         maxWidth: '75%',
-        background: 'rgba(22, 119, 255, 0.15)',
-        border: '1px solid rgba(22, 119, 255, 0.3)',
+        background: token.colorPrimaryBg,
+        border: `1px solid ${token.colorPrimaryBorder}`,
         borderRadius: 12,
         padding: '8px 12px',
       }
     : {
         maxWidth: '80%',
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: token.colorFillQuaternary,
+        border: `1px solid ${token.colorSplit}`,
         borderRadius: 12,
         padding: '8px 12px',
       }
@@ -77,7 +79,7 @@ export default function MessageItem({ message }: MessageItemProps) {
       <Avatar
         icon={avatar}
         style={{
-          background: isUser ? '#1677ff' : '#52c41a',
+          background: isUser ? token.colorPrimary : token.colorSuccess,
           flexShrink: 0,
         }}
       />
@@ -103,7 +105,7 @@ export default function MessageItem({ message }: MessageItemProps) {
                 </ReactMarkdown>
               </div>
             ) : (
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>...</span>
+              <span style={{ color: token.colorTextQuaternary }}>...</span>
             )}
 
             {message.toolCalls && message.toolCalls.length > 0 && (

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Input, Button, Space, Tooltip } from 'antd'
+import { useThemeToken } from '../../hooks/useThemeToken'
 import {
   ReloadOutlined,
   LinkOutlined,
@@ -8,6 +9,7 @@ import {
 export default function BrowserPreview() {
   const [url, setUrl] = useState('https://www.example.com')
   const [currentUrl, setCurrentUrl] = useState('https://www.example.com')
+  const { token } = useThemeToken()
 
   const handleRefresh = () => {
     setCurrentUrl(`${url}${url.includes('?') ? '&' : '?'}_t=${Date.now()}`)
@@ -51,7 +53,7 @@ export default function BrowserPreview() {
         style={{
           width: '100%',
           height: '60vh',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: `1px solid ${token.colorSplit}`,
           borderRadius: 4,
           background: '#fff',
         }}

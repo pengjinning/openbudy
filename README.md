@@ -29,7 +29,7 @@ It is a feature-complete open-source alternative to commercial AI agent workbenc
 - 💬 **Streaming Chat** — Real-time streaming responses with Markdown + code highlighting
 - 📊 **Result Panel** — File tree, diff view, and deliverables overview in one place
 - 🏖️ **Sandbox** — Workspace-scoped file/shell execution with danger detection
-- 🔌 **Multi-Model** — Default DeepSeek; supports any OpenAI-compatible API
+- 🔌 **Multi-Model** — Zhipu GLM by default; configure your Zhipu API Key in-app plus any OpenAI-compatible API (powered by pi-ai)
 - 🌗 **Dark/Light Themes** — Toggle between themes powered by Ant Design ConfigProvider
 - 🖥️ **Electron Desktop** — Native desktop app + browser mock mode for development
 
@@ -46,7 +46,7 @@ It is a feature-complete open-source alternative to commercial AI agent workbenc
 | Local Storage    | IndexedDB via Dexie.js 4                            |
 | Code / Diff      | Monaco Editor                                       |
 | Markdown         | react-markdown + remark-gfm + rehype-highlight      |
-| AI Client        | OpenAI-compatible fetch (SSE streaming)             |
+| AI Client        | @earendil-works/pi-ai (Zhipu/DeepSeek & other OpenAI-compatible streaming) |
 | Packaging        | electron-builder                                    |
 
 ---
@@ -55,7 +55,7 @@ It is a feature-complete open-source alternative to commercial AI agent workbenc
 
 ### Prerequisites
 
-- **Node.js** ≥ 18
+- **Node.js** ≥ 22.19 (runtime requirement of `@earendil-works/pi-ai`)
 - **pnpm** (recommended)
 
 ### Install & Run
@@ -76,8 +76,11 @@ pnpm electron:dev    # Electron desktop app
 ### Configure AI Model
 
 1. Launch the app
-2. Open **Settings** → fill in your **DeepSeek API Key** (or any OpenAI-compatible endpoint)
-3. Start creating tasks!
+2. Open **Settings → Zhipu API Key** and paste your API key from the [Zhipu Open Platform](https://open.bigmodel.cn/usercenter/apikeys) — GLM-4-Flash / GLM-4.6 / GLM-4.7 / GLM-5.3 presets are built in via the OpenAI-compatible endpoint
+3. Optionally add other OpenAI-compatible providers (DeepSeek, Moonshot, ...) under **Settings → Models**, or switch the default model
+4. Create a task and chat with the AI right inside the app!
+
+> The key is stored locally in `~/.openbudy/config.json` only and never uploaded.
 
 ---
 
@@ -120,9 +123,9 @@ openbudy/
 │   ├── monitor.ts                # Timeout / retry monitor
 │   ├── sandbox.ts                # Security sandbox
 │   ├── llm/                      # LLM clients
-│   │   ├── client.ts             # Base OpenAI-compatible client
-│   │   ├── deepseek.ts           # DeepSeek client
-│   │   └── model-registry.ts     # Model registry
+│   │   ├── pi-ai.ts              # pi-ai bridge (Zhipu / OpenAI-compatible streaming + tool calls)
+│   │   ├── client.ts             # Message/chunk protocol types (OpenAI-compatible)
+│   │   └── deepseek.ts           # DeepSeek default config
 │   └── tools/                    # Built-in tools
 │       ├── registry.ts           # Tool registry
 │       ├── shell.ts              # Shell execution
@@ -184,7 +187,7 @@ All tools use JSON Schema definitions compatible with OpenAI Function Calling.
 - [x] Streaming chat with Markdown + syntax highlighting
 - [x] File tree + Monaco diff view
 - [x] Workspace sandbox with danger detection
-- [x] Multi-model support (DeepSeek default)
+- [x] Multi-model support (Zhipu GLM default, API key configured in-app via pi-ai)
 - [x] Dark / Light theme toggle
 - [x] File upload (click, drag & drop, Ctrl+V paste)
 - [x] Browser mock mode for UI development

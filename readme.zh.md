@@ -29,7 +29,7 @@ OpenBudy 是一个 **开源的 AI Agent 桌面工作台**，用 TypeScript 全�
 - 💬 **流式对话** — 实时流式响应，支持 Markdown 渲染 + 代码语法高亮
 - 📊 **结果面板** — 文件树、Diff 变更对比、产物概览一目了然
 - 🏖️ **沙箱安全** — 工作区目录隔离 + 危险命令自动拦截 + 显式用户确认
-- 🔌 **多模型** — 默认 DeepSeek，支持任意 OpenAI 兼容 API
+- 🔌 **多模型** — 默认智谱 GLM，支持在客户端配置智谱 API Key 及任意 OpenAI 兼容 API（基于 pi-ai）
 - 🌗 **深色/浅色主题** — 一键切换，基于 Ant Design ConfigProvider
 - 🖥️ **Electron 桌面** — 原生桌面应用 + 浏览器 Mock 模式开发调试
 
@@ -46,7 +46,7 @@ OpenBudy 是一个 **开源的 AI Agent 桌面工作台**，用 TypeScript 全�
 | 本地存储       | IndexedDB（Dexie.js 4 封装）                          |
 | 代码 / Diff    | Monaco Editor                                         |
 | Markdown       | react-markdown + remark-gfm + rehype-highlight        |
-| AI 客户端      | OpenAI 兼容 fetch（SSE 流式）                         |
+| AI 客户端      | @earendil-works/pi-ai（智谱/DeepSeek 等 OpenAI 兼容流式） |
 | 打包分发       | electron-builder                                      |
 
 ---
@@ -55,7 +55,7 @@ OpenBudy 是一个 **开源的 AI Agent 桌面工作台**，用 TypeScript 全�
 
 ### 环境要求
 
-- **Node.js** ≥ 18
+- **Node.js** ≥ 22.19（`@earendil-works/pi-ai` 的运行时要求）
 - **pnpm**（推荐）
 
 ### 安装运行
@@ -76,8 +76,11 @@ pnpm electron:dev    # Electron 桌面应用
 ### 配置 AI 模型
 
 1. 启动应用
-2. 打开 **设置** → 填入你的 **DeepSeek API Key**（或其他 OpenAI 兼容接口地址）
-3. 开始创建任务！
+2. 打开 **设置 → 智谱 API Key**，填入 [智谱开放平台](https://open.bigmodel.cn/usercenter/apikeys) 的 API Key（内置 GLM-4-Flash / GLM-4.6 / GLM-4.7 / GLM-5.3 预设，请求走 OpenAI 兼容接口）
+3. 也可在 **设置 → 模型管理** 添加其他 OpenAI 兼容服务（DeepSeek、Moonshot 等），或切换默认模型
+4. 开始创建任务，在客户端内直接与 AI 流式对话！
+
+> Key 仅保存在本地 `~/.openbudy/config.json`，不会上传。
 
 ---
 
@@ -120,9 +123,9 @@ openbudy/
 │   ├── monitor.ts                # 超时/重试监控
 │   ├── sandbox.ts                # 安全沙箱
 │   ├── llm/                      # LLM 客户端
-│   │   ├── client.ts             # 基础 OpenAI 兼容客户端
-│   │   ├── deepseek.ts           # DeepSeek 客户端
-│   │   └── model-registry.ts     # 模型注册表
+│   │   ├── pi-ai.ts              # pi-ai 桥接（智谱/OpenAI 兼容，流式 + 工具调用）
+│   │   ├── client.ts             # 消息/chunk 协议类型（OpenAI 兼容）
+│   │   └── deepseek.ts           # DeepSeek 默认配置
 │   └── tools/                    # 内置工具集
 │       ├── registry.ts           # 工具注册表
 │       ├── shell.ts              # Shell 命令执行
@@ -184,7 +187,7 @@ DELIVER  交付  →  汇总结果、生成产物、更新状态
 - [x] 流式对话 + Markdown 渲染 + 代码高亮
 - [x] 文件树预览 + Monaco Diff 对比
 - [x] 工作区沙箱 + 危险操作拦截
-- [x] 多模型切换（默认 DeepSeek）
+- [x] 多模型切换（默认智谱 GLM，客户端内配置 API Key，基于 pi-ai）
 - [x] 深色/浅色主题切换
 - [x] 文件上传（点击、拖拽、Ctrl+V 粘贴）
 - [x] 浏览器 Mock 模式（无需 Electron 即可调试 UI）

@@ -3,6 +3,7 @@ import { Spin, Empty, Flex } from 'antd'
 import MessageItem from './MessageItem'
 import { useChatStore } from '../../stores/chatStore'
 import { useTaskStore } from '../../stores/taskStore'
+import { useThemeToken } from '../../hooks/useThemeToken'
 
 export default function MessageList() {
   const selectedTaskId = useTaskStore((s) => s.selectedTaskId)
@@ -10,6 +11,7 @@ export default function MessageList() {
   const streamingTasks = useChatStore((s) => s.streamingTasks)
   const loadMessages = useChatStore((s) => s.loadMessages)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { token } = useThemeToken()
 
   const messages = selectedTaskId ? messagesByTask[selectedTaskId] ?? [] : []
   const isStreaming = selectedTaskId
@@ -57,7 +59,7 @@ export default function MessageList() {
         <Flex
           align="center"
           gap={8}
-          style={{ padding: '8px 0', color: 'rgba(255,255,255,0.6)' }}
+          style={{ padding: '8px 0', color: token.colorTextSecondary }}
         >
           <Spin size="small" />
           <span>正在思考...</span>

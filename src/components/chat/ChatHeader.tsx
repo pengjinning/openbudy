@@ -6,6 +6,7 @@ import {
 } from '@ant-design/icons'
 import ModelSelector from './ModelSelector'
 import { useTaskStore } from '../../stores/taskStore'
+import { useThemeToken } from '../../hooks/useThemeToken'
 
 const { Text } = Typography
 
@@ -13,6 +14,7 @@ export default function ChatHeader() {
   const selectedTaskId = useTaskStore((s) => s.selectedTaskId)
   const tasks = useTaskStore((s) => s.tasks)
   const task = tasks.find((t) => t.id === selectedTaskId)
+  const { token } = useThemeToken()
 
   return (
     <Flex
@@ -21,13 +23,13 @@ export default function ChatHeader() {
       justify="space-between"
       style={{
         padding: '10px 16px',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        background: 'rgba(255,255,255,0.02)',
+        borderBottom: `1px solid ${token.colorSplit}`,
+        background: token.colorBgContainer,
       }}
     >
       <Text
         ellipsis
-        style={{ flex: 1, marginRight: 12, color: 'rgba(255,255,255,0.85)' }}
+        style={{ flex: 1, marginRight: 12, color: token.colorText }}
       >
         {task?.title ?? '未选择任务'}
       </Text>

@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
+    "@earendil-works/pi-ai": "1.1.0",
     "@monaco-editor/react": "^4.6.0",
     "antd": "^6.0.0",
     "dexie": "^4.0.4",

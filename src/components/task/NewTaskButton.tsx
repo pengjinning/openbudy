@@ -3,6 +3,7 @@ import { Button, Modal, Form, Input, Segmented, Select, Space } from 'antd'
 import { PlusOutlined, FolderOpenOutlined } from '@ant-design/icons'
 import type { TaskMode } from '../../types'
 import { useTask } from '../../hooks/useTask'
+import { useDragSuspension } from '../../hooks/useDragSuspension'
 import { useSettingsStore } from '../../stores/settingsStore'
 import { ipc } from '../../services/ipc'
 
@@ -12,6 +13,8 @@ export default function NewTaskButton() {
   const { createAndSelect } = useTask()
   const modelsConfig = useSettingsStore((s) => s.modelsConfig)
   const [submitting, setSubmitting] = useState(false)
+
+  useDragSuspension(open)
 
   const handleSelectDir = async () => {
     const dir = await ipc.selectDirectory()

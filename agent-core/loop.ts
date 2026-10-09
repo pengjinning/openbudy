@@ -6,7 +6,8 @@ import type {
   TaskMode,
 } from '../src/types'
 import { buildSystemPrompt } from './planner'
-import { chatStream, type LLMMessage } from './llm/client'
+import { chatStreamViaPiAi } from './llm/pi-ai'
+import type { LLMMessage } from './llm/client'
 import { toolRegistry } from './tools/registry'
 import { executeTools } from './executor'
 import {
@@ -169,7 +170,7 @@ export async function start(
     let finishReason: string | undefined
 
     try {
-      for await (const chunk of chatStream(messages, modelConfig, tools, signal)) {
+      for await (const chunk of chatStreamViaPiAi(messages, modelConfig, tools, signal)) {
         if (chunk.type === 'text' && chunk.content) {
           assistantText += chunk.content
           onEvent(

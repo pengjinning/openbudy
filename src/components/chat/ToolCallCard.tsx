@@ -6,6 +6,7 @@ import {
   CloseCircleOutlined,
 } from '@ant-design/icons'
 import type { ToolCall, ToolResult } from '../../types'
+import { useThemeToken } from '../../hooks/useThemeToken'
 
 interface ToolCallCardProps {
   toolCall: ToolCall
@@ -15,6 +16,7 @@ interface ToolCallCardProps {
 export default function ToolCallCard({ toolCall, result }: ToolCallCardProps) {
   const hasResult = !!result
   const isError = result?.isError
+  const { token } = useThemeToken()
 
   let statusTag = (
     <Tag color="blue" icon={<LoadingOutlined />}>
@@ -58,7 +60,7 @@ export default function ToolCallCard({ toolCall, result }: ToolCallCardProps) {
           <div>
             <div
               style={{
-                color: 'rgba(255,255,255,0.6)',
+                color: token.colorTextSecondary,
                 fontSize: 12,
                 marginBottom: 4,
               }}
@@ -67,7 +69,7 @@ export default function ToolCallCard({ toolCall, result }: ToolCallCardProps) {
             </div>
             <pre
               style={{
-                background: 'rgba(255,255,255,0.04)',
+                background: token.colorFillQuaternary,
                 padding: 8,
                 borderRadius: 4,
                 margin: 0,
@@ -82,7 +84,7 @@ export default function ToolCallCard({ toolCall, result }: ToolCallCardProps) {
             <div>
               <div
                 style={{
-                  color: 'rgba(255,255,255,0.6)',
+                  color: token.colorTextSecondary,
                   fontSize: 12,
                   marginBottom: 4,
                 }}
@@ -91,7 +93,7 @@ export default function ToolCallCard({ toolCall, result }: ToolCallCardProps) {
               </div>
               <pre
                 style={{
-                  background: 'rgba(255,255,255,0.04)',
+                  background: token.colorFillQuaternary,
                   padding: 8,
                   borderRadius: 4,
                   margin: 0,

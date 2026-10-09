@@ -1,9 +1,11 @@
 import { DiffEditor } from '@monaco-editor/react'
 import { Empty } from 'antd'
 import { useResultStore } from '../../stores/resultStore'
+import { useThemeToken } from '../../hooks/useThemeToken'
 
 export default function DiffView() {
   const changedFiles = useResultStore((s) => s.changedFiles)
+  const { token } = useThemeToken()
 
   if (changedFiles.length === 0) {
     return <Empty description="无变更" />
@@ -17,8 +19,8 @@ export default function DiffView() {
         style={{
           padding: '6px 8px',
           fontSize: 12,
-          color: 'rgba(255,255,255,0.6)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          color: token.colorTextSecondary,
+          borderBottom: `1px solid ${token.colorSplit}`,
         }}
       >
         {first.path}{' '}
