@@ -46,7 +46,8 @@ export default function MessageItem({ message }: MessageItemProps) {
 
   const alignStyle: React.CSSProperties = {
     display: 'flex',
-    justifyContent: isUser ? 'flex-end' : 'flex-start',
+    // 注意：row-reverse 反转主轴后，flex-start 指向视觉的右侧
+    justifyContent: 'flex-start',
     marginBottom: 16,
     gap: 8,
   }

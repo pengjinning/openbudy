@@ -24,6 +24,7 @@ import { streamSimple } from '@earendil-works/pi-ai/api/openai-completions'
 import { normalizeContext } from '@earendil-works/pi-ai/utils/transcript'
 import { ZAI_MODELS } from '@earendil-works/pi-ai/providers/zai.models'
 import { ZAI_CODING_CN_MODELS } from '@earendil-works/pi-ai/providers/zai-coding-cn.models'
+import { DEEPSEEK_MODELS } from '@earendil-works/pi-ai/providers/deepseek.models'
 import type { LLMChunk, LLMMessage } from './client'
 
 /** 智谱开放平台预设（OpenAI 兼容接口，非 Coding Plan 专用端点） */
@@ -71,6 +72,15 @@ export const ZHIPU_PRESETS: ModelConfig[] = [
 ]
 
 /**
+ * 规范化 baseUrl：pi-ai 走 OpenAI SDK，baseURL 必须是根地址
+ * （SDK 自动拼接 /chat/completions）。用户配置里可能存的是完整端点
+ * （如 https://api.deepseek.com/v1/chat/completions），去掉尾部避免双重路径。
+ */
+function normalizeBaseUrl(url: string): string {
+  return url.replace(/\/chat\/completions\/?$/i, '').replace(/\/+$/, '')
+}
+
+/**
  * 将 openbudy 的 ModelConfig 转为 pi-ai 的 Model 定义
  *
  * 规则：
@@ -81,6 +91,7 @@ export const ZHIPU_PRESETS: ModelConfig[] = [
  */
 export function toPiModel(config: ModelConfig): Model<'openai-completions'> {
   let catalogModel: Model<'openai-completions'> | undefined
+  const baseUrl = normalizeBaseUrl(config.baseUrl)
 
   if (config.provider === 'zhipu') {
     const cnCatalog = ZAI_CODING_CN_MODELS as Record<
@@ -92,24 +103,30 @@ export function toPiModel(config: ModelConfig): Model<'openai-completions'> {
       Model<'openai-completions'> | undefined
     >
     catalogModel = cnCatalog[config.id] ?? zaiCatalog[config.id]
+  } else if (config.provider === 'DeepSeek') {
+    const dsCatalog = DEEPSEEK_MODELS as Record<
+      string,
+      Model<'openai-completions'> | undefined
+    >
+    catalogModel = dsCatalog[config.id]
   }
 
   if (catalogModel) {
     return {
       ...catalogModel,
       name: config.name || catalogModel.name,
-      baseUrl: config.baseUrl,
+      baseUrl,
     }
   }
 
   // 自定义模型兜底：OpenAI 兼容接口
-  const isZhipu = config.provider === 'zhipu' || config.baseUrl.includes('bigmodel.cn')
+  const isZhipu = config.provider === 'zhipu' || baseUrl.includes('bigmodel.cn')
   return {
     id: config.id,
     name: config.name,
     api: 'openai-completions',
     provider: config.provider,
-    baseUrl: config.baseUrl,
+    baseUrl,
     reasoning: /glm-(4\.7|5)/.test(config.id),
     input: ['text'],
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },

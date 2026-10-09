@@ -1,7 +1,6 @@
-import { List, Empty } from 'antd'
+import { Empty } from 'antd'
 import TaskCard from './TaskCard'
 import { useTaskStore } from '../../stores/taskStore'
-import type { Task } from '../../types'
 
 export default function TaskList() {
   const tasks = useTaskStore((s) => s.tasks)
@@ -33,10 +32,10 @@ export default function TaskList() {
   }
 
   return (
-    <List
-      dataSource={sorted}
-      renderItem={(task: Task) => <TaskCard task={task} />}
-      split={false}
-    />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {sorted.map((task) => (
+        <TaskCard key={task.id} task={task} />
+      ))}
+    </div>
   )
 }

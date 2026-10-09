@@ -63,6 +63,16 @@ body.app-drag-suspended .app-drag {
   -webkit-app-region: no-drag;
 }
 
+/* ==================== Splitter 分栏拖拽条 ==================== */
+.app-splitter .ant-splitter-bar-dragger::before {
+  background: rgba(128, 128, 128, 0.35);
+}
+
+.app-splitter .ant-splitter-bar-dragger:hover::before,
+.app-splitter .ant-splitter-bar-dragger-active::before {
+  background: #1677ff;
+}
+
 /* ==================== Markdown 样式（主题自适应） ====================
    antd ConfigProvider 会在 body 上挂 theme-light / theme-dark 类，
    借助 CSS 变量让 markdown 区域适配两套主题 */

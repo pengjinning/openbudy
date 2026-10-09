@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { ModelConfig, ModelsConfig, ThemeSetting } from '../types'
 import { ipc } from '../services/ipc'
 import { ZHIPU_PRESETS } from '../../agent-core/llm/pi-ai'
+import { DEEPSEEK_PRESETS } from '../../agent-core/llm/deepseek-presets'
 
 interface SettingsState {
   theme: ThemeSetting
@@ -22,19 +23,7 @@ interface SettingsState {
 
 const DEFAULT_MODELS_CONFIG: ModelsConfig = {
   defaultModel: 'glm-4-flash',
-  models: [
-    ...ZHIPU_PRESETS,
-    {
-      id: 'deepseek-chat',
-      name: 'DeepSeek V3',
-      provider: 'DeepSeek',
-      baseUrl: 'https://api.deepseek.com/v1/chat/completions',
-      apiKey: '',
-      maxInputTokens: 128000,
-      maxOutputTokens: 8192,
-      supportsToolCalling: true,
-    },
-  ],
+  models: [...ZHIPU_PRESETS, ...DEEPSEEK_PRESETS],
 }
 
 async function persistModelsConfig(config: ModelsConfig): Promise<void> {
@@ -49,16 +38,26 @@ async function persistWorkspaceRoot(path: string): Promise<void> {
   await ipc.storageSet('workspaceRoot', path)
 }
 
+/** 已下线的旧模型 id → 替代的新模型 */
+const LEGACY_MODEL_REPLACEMENTS = ['deepseek-chat']
+
 /**
  * 合并持久化配置与内置预设：
- * - 老版本用户没有智谱模型 → 自动补齐智谱预设（API Key 留空，待用户填写）
- * - 已存在的同 id 模型（用户自定义过）保持不变
+ * - 移除已下线的旧模型（deepseek-chat 等），其 API Key 迁移到新的 DeepSeek 预设
+ * - 补齐缺失的智谱 / DeepSeek 预设（已存在的同 id 自定义项保持不变）
  * - 默认模型失效时回退到第一个智谱预设
  */
 function mergeWithDefaults(saved: ModelsConfig): ModelsConfig {
-  const savedIds = new Set(saved.models.map((m) => m.id))
-  const missingPresets = ZHIPU_PRESETS.filter((p) => !savedIds.has(p.id))
-  const models = [...saved.models, ...missingPresets]
+  // 旧 deepseek-chat 的 Key 迁移给新 DeepSeek 预设
+  const legacy = saved.models.find(
+    (m) => LEGACY_MODEL_REPLACEMENTS.includes(m.id) && m.apiKey
+  )
+  const kept = saved.models.filter((m) => !LEGACY_MODEL_REPLACEMENTS.includes(m.id))
+  const savedIds = new Set(kept.map((m) => m.id))
+  const missingPresets = [...ZHIPU_PRESETS, ...DEEPSEEK_PRESETS]
+    .filter((p) => !savedIds.has(p.id))
+    .map((p) => (legacy?.apiKey && p.provider === 'DeepSeek' ? { ...p, apiKey: legacy.apiKey } : p))
+  const models = [...kept, ...missingPresets]
   const defaultModel = models.some((m) => m.id === saved.defaultModel)
     ? saved.defaultModel
     : (models[0]?.id ?? '')

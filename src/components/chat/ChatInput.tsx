@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Input, Button, Segmented, Upload, Popover, List, Tooltip, Flex } from 'antd'
+import { Input, Button, Upload, Popover, Tooltip, Flex } from 'antd'
 import type { UploadFile } from 'antd'
 import {
   SendOutlined,
   PaperClipOutlined,
   SnippetsOutlined,
 } from '@ant-design/icons'
-import type { TaskMode } from '../../types'
 import { useTaskStore } from '../../stores/taskStore'
 import { useAgent } from '../../hooks/useAgent'
 import { useFileUpload } from '../../hooks/useFileUpload'
@@ -26,7 +25,6 @@ export default function ChatInput() {
   const { token } = useThemeToken()
   const modelsConfig = useSettingsStore((s) => s.modelsConfig)
   const [value, setValue] = useState('')
-  const [mode, setMode] = useState<TaskMode>(task?.mode ?? 'ask')
   const [refFiles, setRefFiles] = useState<{ name: string; path: string }[]>([])
 
   const handleSend = async () => {
@@ -62,22 +60,33 @@ export default function ChatInput() {
   }
 
   const refPopoverContent = (
-    <List
-      size="small"
-      dataSource={refFiles}
-      style={{ maxHeight: 240, overflow: 'auto', width: 280 }}
-      locale={{ emptyText: '无文件' }}
-      renderItem={(item) => (
-        <List.Item
-          style={{ cursor: 'pointer', padding: '6px 8px' }}
-          onClick={() => {
-            setValue((v) => `${v} @${item.name}`)
-          }}
-        >
-          <span style={{ fontSize: 12 }}>{item.name}</span>
-        </List.Item>
+    <div
+      style={{
+        maxHeight: 240,
+        overflow: 'auto',
+        width: 280,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {refFiles.length === 0 ? (
+        <span style={{ fontSize: 12, color: token.colorTextSecondary, padding: '6px 8px' }}>
+          无文件
+        </span>
+      ) : (
+        refFiles.map((item) => (
+          <div
+            key={item.path}
+            style={{ cursor: 'pointer', padding: '6px 8px', fontSize: 12 }}
+            onClick={() => {
+              setValue((v) => `${v} @${item.name}`)
+            }}
+          >
+            {item.name}
+          </div>
+        ))
       )}
-    />
+    </div>
   )
 
   if (!task) {
@@ -128,16 +137,6 @@ export default function ChatInput() {
               <Button size="small" icon={<SnippetsOutlined />} />
             </Tooltip>
           </Popover>
-          <Segmented
-            size="small"
-            value={mode}
-            onChange={(v) => setMode(v as TaskMode)}
-            options={[
-              { label: '问一问', value: 'ask' },
-              { label: '做一做', value: 'craft' },
-              { label: '想一想', value: 'plan' },
-            ]}
-          />
         </Flex>
         {isRunning ? (
           <Button danger size="small" onClick={stop}>

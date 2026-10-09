@@ -13,7 +13,6 @@ interface ElectronAPI {
   agentExecute: (params: {
     taskId: string
     userMessage: string
-    mode: 'ask' | 'craft' | 'plan'
     modelConfig: ModelConfig
     workspacePath: string
     historyMessages: Array<{
@@ -40,21 +39,7 @@ interface ElectronAPI {
 }
 
 // ==================== Mock 默认数据 ====================
-const DEFAULT_MODELS_CONFIG = {
-  defaultModel: 'deepseek-chat',
-  models: [
-    {
-      id: 'deepseek-chat',
-      name: 'DeepSeek V3',
-      provider: 'DeepSeek',
-      baseUrl: 'https://api.deepseek.com/v1/chat/completions',
-      apiKey: '',
-      maxInputTokens: 128000,
-      maxOutputTokens: 8192,
-      supportsToolCalling: true,
-    },
-  ],
-}
+// modelsConfig 不预置 —— mock storage 返回 null，settingsStore 会填充完整预设（智谱 + DeepSeek）
 
 const MOCK_FILE_LIST = [
   { name: 'src', path: '/mock/src', isDirectory: true, size: 0 },
@@ -77,7 +62,6 @@ function dispatchAgentEvent(event: AgentEvent): void {
 function mockAgentExecute(params: {
   taskId: string
   userMessage: string
-  mode: 'ask' | 'craft' | 'plan'
   modelConfig: ModelConfig
   workspacePath: string
   historyMessages: Array<{
@@ -163,7 +147,6 @@ function createIpc(): ElectronAPI {
 
   // 浏览器环境 Mock
   const mockStorage = new Map<string, unknown>()
-  mockStorage.set('modelsConfig', DEFAULT_MODELS_CONFIG)
   mockStorage.set('theme', 'dark')
   mockStorage.set('workspaceRoot', '~/openbudy-workspace/')
 
@@ -191,7 +174,7 @@ function createIpc(): ElectronAPI {
     fileMkdir: async (_dirPath: string) => {
       /* mock 无操作 */
     },
-    getWorkspacePath: async (taskId: string) => `~/openbudy-workspace/${taskId}/`,
+    getWorkspacePath: async (taskId: string) => `~/openbudy-workspace/${taskId}/`, // mock：主进程会展开 ~
     selectDirectory: async () => '~/openbudy-workspace/',
     storageGet: async (key: string) => mockStorage.get(key),
     storageSet: async (key: string, value: unknown) => {

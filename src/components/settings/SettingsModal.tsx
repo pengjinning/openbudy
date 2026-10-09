@@ -23,11 +23,15 @@ import { useSettingsStore } from '../../stores/settingsStore'
 import { useDragSuspension } from '../../hooks/useDragSuspension'
 import { useThemeToken } from '../../hooks/useThemeToken'
 import { ipc } from '../../services/ipc'
+import { DEEPSEEK_PRESETS } from '../../../agent-core/llm/deepseek-presets'
 
 const { Text } = Typography
 
 /** 智谱预设 baseUrl（普通 API，OpenAI 兼容接口） */
 const ZHIPU_BASE_URL = 'https://open.bigmodel.cn/api/paas/v4'
+
+/** DeepSeek API Key 申请入口 */
+const DEEPSEEK_KEY_URL = 'https://platform.deepseek.com/api_keys'
 
 const EMPTY_CUSTOM_MODEL: ModelConfig = {
   id: '',
@@ -65,10 +69,19 @@ export default function SettingsModal() {
 
   const zhipuModels = modelsConfig.models.filter((m) => m.provider === 'zhipu')
   const zhipuApiKey = zhipuModels[0]?.apiKey ?? ''
+  const deepseekModels = modelsConfig.models.filter((m) => m.provider === 'DeepSeek')
+  const deepseekApiKey = deepseekModels[0]?.apiKey ?? ''
 
   /** 智谱 Key 一次填写，同步到所有智谱预设模型 */
   const handleZhipuKeyChange = (key: string) => {
     for (const m of zhipuModels) {
+      updateModel(m.id, { apiKey: key })
+    }
+  }
+
+  /** DeepSeek Key 一次填写，同步到所有 DeepSeek 预设模型 */
+  const handleDeepseekKeyChange = (key: string) => {
+    for (const m of deepseekModels) {
       updateModel(m.id, { apiKey: key })
     }
   }
@@ -127,13 +140,55 @@ export default function SettingsModal() {
     </Form>
   )
 
+  /** 共享的模型列表（provider Key tab 用）：名称 + id + Key 状态 + 设为默认 */
+  const renderModelRows = (models: ModelConfig[]) => (
+    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {models.length === 0 && (
+        <Text type="secondary">暂无预设模型，可在「模型管理」中添加</Text>
+      )}
+      {models.map((m) => (
+        <div
+          key={m.id}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 12px',
+            border: `1px solid ${token.colorBorderSecondary}`,
+            borderRadius: 6,
+          }}
+        >
+          <Text strong style={{ minWidth: 140 }}>{m.name}</Text>
+          <Tag>{m.id}</Tag>
+          {m.apiKey ? (
+            <Tag color="green" icon={<CheckCircleOutlined />}>已配置 Key</Tag>
+          ) : (
+            <Tag color="orange">未配置 Key</Tag>
+          )}
+          <div style={{ flex: 1 }} />
+          {modelsConfig.defaultModel === m.id ? (
+            <Tag color="blue">默认</Tag>
+          ) : (
+            <Button
+              size="small"
+              type="text"
+              onClick={() => setDefaultModel(m.id)}
+            >
+              设为默认
+            </Button>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+
   const zhipuTab = (
     <div style={{ maxWidth: 560 }}>
       <Alert
         type="info"
         showIcon
         style={{ marginBottom: 16 }}
-        message="智谱开放平台 API Key"
+        title="智谱开放平台 API Key"
         description={
           <span>
             在{' '}
@@ -165,44 +220,49 @@ export default function SettingsModal() {
       <Text type="secondary" style={{ fontSize: 12 }}>
         可用模型（请求走 {ZHIPU_BASE_URL}）
       </Text>
-      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {zhipuModels.length === 0 && (
-          <Text type="secondary">暂无智谱模型，可在「模型管理」中添加</Text>
-        )}
-        {zhipuModels.map((m) => (
-          <div
-            key={m.id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 12px',
-              border: `1px solid ${token.colorBorderSecondary}`,
-              borderRadius: 6,
-            }}
-          >
-            <Text strong style={{ minWidth: 140 }}>{m.name}</Text>
-            <Tag>{m.id}</Tag>
-            {m.apiKey ? (
-              <Tag color="green" icon={<CheckCircleOutlined />}>已配置 Key</Tag>
-            ) : (
-              <Tag color="orange">未配置 Key</Tag>
-            )}
-            <div style={{ flex: 1 }} />
-            {modelsConfig.defaultModel === m.id ? (
-              <Tag color="blue">默认</Tag>
-            ) : (
-              <Button
-                size="small"
-                type="text"
-                onClick={() => setDefaultModel(m.id)}
-              >
-                设为默认
-              </Button>
-            )}
-          </div>
-        ))}
-      </div>
+      {renderModelRows(zhipuModels)}
+    </div>
+  )
+
+  const deepseekTab = (
+    <div style={{ maxWidth: 560 }}>
+      <Alert
+        type="info"
+        showIcon
+        style={{ marginBottom: 16 }}
+        title="DeepSeek 开放平台 API Key"
+        description={
+          <span>
+            在{' '}
+            <a
+              href={DEEPSEEK_KEY_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              DeepSeek 开放平台 → API Keys
+            </a>{' '}
+            页面创建。Key 会保存在本地 <Text code>~/.openbudy/config.json</Text>，
+            仅用于直接请求 <Text code>api.deepseek.com</Text>。
+          </span>
+        }
+      />
+      <Form layout="vertical">
+        <Form.Item
+          label="API Key"
+          extra="一次填写即可应用到下方所有 DeepSeek 模型"
+        >
+          <Input.Password
+            placeholder="sk-xxxxxxxxxxxxxxxx"
+            value={deepseekApiKey}
+            onChange={(e) => handleDeepseekKeyChange(e.target.value)}
+            style={{ maxWidth: 420 }}
+          />
+        </Form.Item>
+      </Form>
+      <Text type="secondary" style={{ fontSize: 12 }}>
+        可用模型（{DEEPSEEK_PRESETS.map((p) => p.id).join(' / ')}）
+      </Text>
+      {renderModelRows(deepseekModels)}
     </div>
   )
 
@@ -337,6 +397,7 @@ export default function SettingsModal() {
         items={[
           { key: 'general', label: '通用', children: generalTab },
           { key: 'zhipu', label: '智谱 API Key', children: zhipuTab },
+          { key: 'deepseek', label: 'DeepSeek API Key', children: deepseekTab },
           { key: 'models', label: '模型管理', children: modelsTab },
         ]}
       />

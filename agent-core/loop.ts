@@ -3,9 +3,8 @@ import type {
   ModelConfig,
   ToolCall,
   ToolResult,
-  TaskMode,
 } from '../src/types'
-import { buildSystemPrompt } from './planner'
+import { buildAgentSystemPrompt } from './planner'
 import { chatStreamViaPiAi } from './llm/pi-ai'
 import type { LLMMessage } from './llm/client'
 import { toolRegistry } from './tools/registry'
@@ -19,7 +18,6 @@ import {
 export interface AgentLoopParams {
   taskId: string
   userMessage: string
-  mode: TaskMode
   modelConfig: ModelConfig
   workspacePath: string
   historyMessages: Array<{
@@ -102,7 +100,6 @@ export async function start(
   const {
     taskId,
     userMessage,
-    mode,
     modelConfig,
     workspacePath,
     historyMessages,
@@ -111,23 +108,22 @@ export async function start(
 
   const timer = createTimer(TIMEOUT_MS)
 
-  // 1. 构建 messages
-  const systemPrompt = buildSystemPrompt(mode, workspacePath)
+  // 1. 构建 messages（系统提示由 Agent 自主决策何时用工具，不再区分手动模式）
+  const systemPrompt = buildAgentSystemPrompt(workspacePath)
   const messages: LLMMessage[] = [
     { role: 'system', content: systemPrompt },
     ...historyToLLMMessages(historyMessages),
     { role: 'user', content: userMessage },
   ]
 
-  // 2. 工具集（ask 模式不传工具）
-  const tools =
-    mode === 'ask' ? undefined : toolRegistry.getToolDefinitions()
+  // 2. 始终提供全部工具，是否调用由模型根据提示词自主判断
+  const tools = toolRegistry.getToolDefinitions()
 
   // 状态变更：running
   onEvent(
     emit(taskId, 'status_change', {
       status: 'running',
-      message: `任务开始（模式：${mode}）`,
+      message: '任务开始',
     })
   )
 

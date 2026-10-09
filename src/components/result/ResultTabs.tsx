@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Tabs, Segmented, Empty, List, Tag, Typography, Flex } from 'antd'
+import { Tabs, Segmented, Empty, Tag, Typography, Flex } from 'antd'
 import type { TabsProps } from 'antd'
 import FileTree from './FileTree'
 import DiffView from './DiffView'
 import BrowserPreview from './BrowserPreview'
 import { useTaskStore } from '../../stores/taskStore'
 import { useResultStore } from '../../stores/resultStore'
+import { useThemeToken } from '../../hooks/useThemeToken'
 
 const { Text } = Typography
 
@@ -17,6 +18,7 @@ export default function ResultTabs() {
   const artifacts = useResultStore((s) => s.artifacts)
   const changedFiles = useResultStore((s) => s.changedFiles)
   const loadArtifacts = useResultStore((s) => s.loadArtifacts)
+  const { token } = useThemeToken()
 
   useEffect(() => {
     if (selectedTaskId) {
@@ -56,15 +58,13 @@ export default function ResultTabs() {
       {artifacts.length === 0 ? (
         <Empty description="无产物" />
       ) : (
-        <List
-          dataSource={artifacts}
-          renderItem={(a) => (
-            <List.Item>
-              <Flex
-                align="center"
-                justify="space-between"
-                style={{ width: '100%' }}
-              >
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {artifacts.map((a) => (
+            <div
+              key={a.id}
+              style={{ padding: '10px 0', borderBottom: `1px solid ${token.colorSplit}` }}
+            >
+              <Flex align="center" justify="space-between" style={{ width: '100%' }}>
                 <div>
                   <Text>{a.fileName}</Text>
                   <div>
@@ -75,9 +75,9 @@ export default function ResultTabs() {
                 </div>
                 <Tag>{a.fileType}</Tag>
               </Flex>
-            </List.Item>
-          )}
-        />
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )

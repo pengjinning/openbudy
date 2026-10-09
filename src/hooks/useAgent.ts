@@ -13,6 +13,15 @@ import { ipc } from '../services/ipc'
 import { useChatStore } from '../stores/chatStore'
 import { useTaskStore } from '../stores/taskStore'
 import { useSettingsStore } from '../stores/settingsStore'
+import { DEFAULT_TASK_TITLE } from '../components/task/NewTaskButton'
+
+/** 根据首条用户消息生成简短任务标题 */
+function generateTaskTitle(userMessage: string): string {
+  // 取首行、去空白，超长截断
+  const firstLine = userMessage.trim().split('\n')[0].trim()
+  if (!firstLine) return DEFAULT_TASK_TITLE
+  return firstLine.length > 30 ? `${firstLine.slice(0, 30)}…` : firstLine
+}
 
 interface UseAgentReturn {
   execute: (userMessage: string) => Promise<void>
@@ -118,6 +127,14 @@ export function useAgent(taskId: string | null): UseAgentReturn {
         return
       }
 
+      // 首次对话：根据消息内容自动更新任务标题（先于模型校验执行，
+      // 即使模型未配置 Key，用户已发出的消息也应反映在标题上）
+      if (task.title === DEFAULT_TASK_TITLE) {
+        void taskStore.getState().updateTask(taskId, {
+          title: generateTaskTitle(userMessage),
+        })
+      }
+
       const modelsConfig = settingsStore.getState().modelsConfig
       // 优先用任务绑定的模型，其次全局默认模型
       const modelConfig =
@@ -164,11 +181,10 @@ export function useAgent(taskId: string | null): UseAgentReturn {
           toolResults: m.toolResults,
         }))
 
-      // 5. 调用 ipc 执行
+      // 5. 调用 ipc 执行（Agent 自主决策模式，不再传 mode）
       const result = await ipc.agentExecute({
         taskId,
         userMessage,
-        mode: task.mode,
         modelConfig,
         workspacePath: task.workspacePath,
         historyMessages,

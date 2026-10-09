@@ -33,7 +33,7 @@ function resolveModelConfig(params: {
 
 export function registerAgentIpc(): void {
   ipcMain.handle('agent:execute', async (_event, params) => {
-    const { taskId, userMessage, mode, workspacePath, historyMessages } = params
+    const { taskId, userMessage, workspacePath, historyMessages } = params
 
     const modelConfig = resolveModelConfig(params)
     if (!modelConfig) {
@@ -51,7 +51,6 @@ export function registerAgentIpc(): void {
         {
           taskId,
           userMessage,
-          mode,
           modelConfig,
           workspacePath,
           historyMessages,

@@ -3,6 +3,7 @@ import type { Task, TaskMode } from '../types'
 import { useTaskStore } from '../stores/taskStore'
 import { useChatStore } from '../stores/chatStore'
 import { useResultStore } from '../stores/resultStore'
+import { ipc } from '../services/ipc'
 
 interface UseTaskReturn {
   createAndSelect: (
@@ -24,7 +25,9 @@ export function useTask(): UseTaskReturn {
 
   const createAndSelect = useCallback(
     async (title: string, mode: TaskMode, modelId: string, workspacePath?: string) => {
-      const wsPath = workspacePath ?? `~/openbudy-workspace/${Date.now()}/`
+      // 工作目录由主进程分配：绝对路径（~/openbudy-workspace/<taskId>）并自动创建。
+      // 不能在前端拼 "~" 字面量 —— Node 的 fs/path 不会展开 ~，会得到 ENOENT。
+      const wsPath = workspacePath ?? (await ipc.getWorkspacePath(`task-${Date.now()}`))
       const id = await taskStore.getState().createTask(title, mode, modelId, wsPath)
       taskStore.getState().selectTask(id)
       // 预初始化空消息列表
