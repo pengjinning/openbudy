@@ -73,6 +73,17 @@ body.app-drag-suspended .app-drag {
   background: #1677ff;
 }
 
+/* ==================== 文件树行内操作按钮 ====================
+   平时隐藏保持树清爽，hover 到行上时浮现 */
+.filetree-actions {
+  visibility: hidden;
+}
+
+.ant-tree-treenode:hover .filetree-actions,
+.filetree-actions .ant-btn:focus-visible {
+  visibility: visible;
+}
+
 /* ==================== Markdown 样式（主题自适应） ====================
    antd ConfigProvider 会在 body 上挂 theme-light / theme-dark 类，
    借助 CSS 变量让 markdown 区域适配两套主题 */

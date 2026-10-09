@@ -35,7 +35,7 @@ export default function ChatHeader() {
       </Text>
       <Flex className="app-no-drag" align="center" gap={8}>
         <ModelSelector />
-        <Tooltip title="搜索">
+        {/* <Tooltip title="搜索">
           <Button size="small" icon={<SearchOutlined />} />
         </Tooltip>
         <Tooltip title="分享">
@@ -43,7 +43,7 @@ export default function ChatHeader() {
         </Tooltip>
         <Tooltip title="历史">
           <Button size="small" icon={<HistoryOutlined />} />
-        </Tooltip>
+        </Tooltip> */}
       </Flex>
     </Flex>
   )
