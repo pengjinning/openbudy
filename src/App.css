@@ -45,6 +45,16 @@ body,
   min-width: 0;
 }
 
+/* ==================== 窗口拖拽（无边框标题栏） ==================== */
+.app-drag {
+  -webkit-app-region: drag;
+}
+
+/* 拖拽区域内的可交互元素必须显式排除，否则点击会被识别为拖拽窗口 */
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
 /* ==================== Markdown 样式 ==================== */
 .markdown-body {
   font-size: 14px;

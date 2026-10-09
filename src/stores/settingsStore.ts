@@ -49,7 +49,7 @@ async function persistWorkspaceRoot(path: string): Promise<void> {
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   theme: 'dark',
   modelsConfig: DEFAULT_MODELS_CONFIG,
-  workspaceRoot: '~/workbuddy-workspace/',
+  workspaceRoot: '~/openbudy-workspace/',
   settingsOpen: false,
 
   init: async () => {
@@ -62,7 +62,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     set({
       theme: (theme as 'light' | 'dark') ?? 'dark',
       modelsConfig: (modelsConfig as ModelsConfig) ?? DEFAULT_MODELS_CONFIG,
-      workspaceRoot: (workspaceRoot as string) ?? '~/workbuddy-workspace/',
+      workspaceRoot: (workspaceRoot as string) ?? '~/openbudy-workspace/',
     })
   },
 

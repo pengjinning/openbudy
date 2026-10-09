@@ -42,7 +42,7 @@ export function useFileUpload(taskId: string | null): UseFileUploadReturn {
         })
 
         // 写入 workspace/uploads/
-        const filePath = `~/workbuddy-workspace/${taskId}/uploads/${file.name}`
+        const filePath = `~/openbudy-workspace/${taskId}/uploads/${file.name}`
         await ipc.fileWrite(filePath, content)
 
         const uploaded: UploadedFile = {

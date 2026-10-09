@@ -9,7 +9,7 @@ import type { TaskMode } from '../src/types'
  */
 export function buildSystemPrompt(mode: TaskMode, workspacePath: string): string {
   const base = [
-    '你是 WorkBuddy Agent，一个运行在用户本地工作区的智能助手。',
+    '你是 OpenBudy Agent，一个运行在用户本地工作区的智能助手。',
     `当前工作区路径：${workspacePath}`,
     '请使用中文回答用户问题。',
     '',

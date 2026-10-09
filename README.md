@@ -1,6 +1,6 @@
 <p align="center">
-  <h1 align="center">🤖 OpenBuddy</h1>
-  <p align="center"><strong>AI Agent Desktop Workbench — Open-Source WorkBuddy Alternative</strong></p>
+  <h1 align="center">🤖 OpenBudy</h1>
+  <p align="center"><strong>AI Agent Desktop Workbench — Open-Source Alternative to Commercial Agents</strong></p>
 </p>
 
 <p align="center">
@@ -16,11 +16,11 @@
 
 ---
 
-## 📖 What is OpenBuddy?
+## 📖 What is OpenBudy?
 
-OpenBuddy is an **open-source AI Agent desktop workbench** built with TypeScript. You describe what you want in natural language — OpenBuddy **plans, executes, and delivers complete results** autonomously.
+OpenBudy is an **open-source AI Agent desktop workbench** built with TypeScript. You describe what you want in natural language — OpenBudy **plans, executes, and delivers complete results** autonomously.
 
-It is a feature-complete open-source alternative to Tencent's WorkBuddy, bringing the power of an AI agent with a polished visual management UI.
+It is a feature-complete open-source alternative to commercial AI agent workbenches, bringing the power of an AI agent with a polished visual management UI.
 
 ### ✨ Highlights
 
@@ -141,7 +141,7 @@ openbudy/
 
 ## 🧠 Agent Loop
 
-OpenBuddy's Agent runs a five-phase execution loop:
+OpenBudy's Agent runs a five-phase execution loop:
 
 ```
 ANALYZE  →  Parse user intent, identify task type
@@ -228,4 +228,4 @@ pnpm electron:build
 
 ## 📄 License
 
-MIT © OpenBuddy Contributors
+MIT © OpenBudy Contributors

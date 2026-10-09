@@ -164,7 +164,7 @@ function createIpc(): ElectronAPI {
   const mockStorage = new Map<string, unknown>()
   mockStorage.set('modelsConfig', DEFAULT_MODELS_CONFIG)
   mockStorage.set('theme', 'dark')
-  mockStorage.set('workspaceRoot', '~/workbuddy-workspace/')
+  mockStorage.set('workspaceRoot', '~/openbudy-workspace/')
 
   const mockApi: ElectronAPI = {
     agentExecute: (params) => mockAgentExecute(params),
@@ -190,8 +190,8 @@ function createIpc(): ElectronAPI {
     fileMkdir: async (_dirPath: string) => {
       /* mock 无操作 */
     },
-    getWorkspacePath: async (taskId: string) => `~/workbuddy-workspace/${taskId}/`,
-    selectDirectory: async () => '~/workbuddy-workspace/',
+    getWorkspacePath: async (taskId: string) => `~/openbudy-workspace/${taskId}/`,
+    selectDirectory: async () => '~/openbudy-workspace/',
     storageGet: async (key: string) => mockStorage.get(key),
     storageSet: async (key: string, value: unknown) => {
       mockStorage.set(key, value)

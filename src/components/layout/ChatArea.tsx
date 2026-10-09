@@ -10,6 +10,7 @@ export default function ChatArea() {
   if (!selectedTaskId) {
     return (
       <Flex
+        className="app-drag"
         align="center"
         justify="center"
         vertical

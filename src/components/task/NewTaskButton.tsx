@@ -53,7 +53,7 @@ export default function NewTaskButton() {
         onCancel={() => setOpen(false)}
         onOk={handleSubmit}
         confirmLoading={submitting}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form
           form={form}
@@ -88,13 +88,11 @@ export default function NewTaskButton() {
               }))}
             />
           </Form.Item>
-          <Form.Item name="workspacePath" label="工作目录">
+          <Form.Item label="工作目录">
             <Space.Compact style={{ width: '100%' }}>
-              <Input
-                value={form.getFieldValue('workspacePath')}
-                placeholder="选择工作目录"
-                readOnly
-              />
+              <Form.Item name="workspacePath" noStyle>
+                <Input placeholder="选择工作目录" readOnly />
+              </Form.Item>
               <Button icon={<FolderOpenOutlined />} onClick={handleSelectDir} />
             </Space.Compact>
           </Form.Item>

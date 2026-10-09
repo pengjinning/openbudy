@@ -58,7 +58,7 @@ export const webFetchHandler: ToolHandler = async (args, context) => {
       signal: context.signal,
       headers: {
         'User-Agent':
-          'Mozilla/5.0 (compatible; WorkBuddyAgent/1.0; +https://example.com)',
+          'Mozilla/5.0 (compatible; OpenBudyAgent/1.0; +https://example.com)',
       },
     })
 

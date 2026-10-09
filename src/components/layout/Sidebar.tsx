@@ -14,23 +14,25 @@ export default function Sidebar() {
   const setSettingsOpen = useSettingsStore((s) => s.setSettingsOpen)
 
   return (
-    <Flex vertical style={{ height: '100%', padding: 12, gap: 12 }}>
-      {/* 顶部 Logo + 搜索 */}
-      <div>
-        <Title level={4} style={{ color: '#1677ff', margin: '0 0 12px' }}>
-          WorkBuddy
-        </Title>
+    <Flex vertical className="app-drag" style={{ height: '100%', padding: 12, gap: 12 }}>
+      {/* 顶部 Logo + 搜索（空白处可拖拽窗口） */}
+      <Title level={4} style={{ color: '#1677ff', margin: 0 }}>
+        OpenBudy
+      </Title>
+      <div className="app-no-drag">
         <TaskSearch />
       </div>
 
       {/* 中部：过滤器 + 任务列表 */}
-      <TaskFilter />
-      <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+      <div className="app-no-drag">
+        <TaskFilter />
+      </div>
+      <div className="app-no-drag" style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
         <TaskList />
       </div>
 
       {/* 底部：新建任务 + 设置 + 主题切换 */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div className="app-no-drag" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <NewTaskButton />
         <Tooltip title="设置">
           <Button

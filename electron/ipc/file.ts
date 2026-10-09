@@ -3,7 +3,7 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import * as os from 'os'
 
-const WORKSPACE_ROOT = path.join(os.homedir(), 'workbuddy-workspace')
+const WORKSPACE_ROOT = path.join(os.homedir(), 'openbudy-workspace')
 
 export function registerFileIpc(): void {
   ipcMain.handle('file:read', async (_event, filePath: string) => {

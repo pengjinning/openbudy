@@ -1,5 +1,5 @@
-appId: com.workbuddy.clone
-productName: WorkBuddy Clone
+appId: com.openbudy.app
+productName: OpenBudy
 directories:
   output: release
 files:

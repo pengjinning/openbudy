@@ -1,9 +1,9 @@
-# WorkBuddy 复刻项目 — 实现规划文档 v1.1
+# OpenBudy — 实现规划文档 v1.1
 
 > **版本**: v1.1
 > **日期**: 2026-07-25
 > **阶段**: 代码实施阶段
-> **上游文档**: workbuddy-feature-research.md v3.1
+> **上游文档**: openbudy-feature-research.md v3.1
 > **目标**: 将需求规划转化为可执行的开发任务
 
 ---
@@ -64,7 +64,7 @@
 
 ```mermaid
 gantt
-    title WorkBuddy 复刻 — 开发路线图
+    title OpenBudy — 开发路线图
     dateFormat  YYYY-MM-DD
     section Phase 1 基础补全
     设置面板 UI           :p1a, 2026-07-25, 2d

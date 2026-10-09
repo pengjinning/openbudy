@@ -24,7 +24,7 @@ export function useTask(): UseTaskReturn {
 
   const createAndSelect = useCallback(
     async (title: string, mode: TaskMode, modelId: string, workspacePath?: string) => {
-      const wsPath = workspacePath ?? `~/workbuddy-workspace/${Date.now()}/`
+      const wsPath = workspacePath ?? `~/openbudy-workspace/${Date.now()}/`
       const id = await taskStore.getState().createTask(title, mode, modelId, wsPath)
       taskStore.getState().selectTask(id)
       // 预初始化空消息列表

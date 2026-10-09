@@ -30,7 +30,7 @@ const fs__namespace = /* @__PURE__ */ _interopNamespaceDefault(fs$1);
 const os__namespace = /* @__PURE__ */ _interopNamespaceDefault(os);
 function buildSystemPrompt(mode, workspacePath) {
   const base = [
-    "你是 WorkBuddy Agent，一个运行在用户本地工作区的智能助手。",
+    "你是 OpenBudy Agent，一个运行在用户本地工作区的智能助手。",
     `当前工作区路径：${workspacePath}`,
     "请使用中文回答用户问题。",
     "",
@@ -496,7 +496,7 @@ const webFetchHandler = async (args, context) => {
     const response = await fetch(url, {
       signal: context.signal,
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; WorkBuddyAgent/1.0; +https://example.com)"
+        "User-Agent": "Mozilla/5.0 (compatible; OpenBudyAgent/1.0; +https://example.com)"
       }
     });
     if (!response.ok) {
@@ -950,7 +950,7 @@ function registerAgentIpc() {
     }
   });
 }
-const WORKSPACE_ROOT = path__namespace.join(os__namespace.homedir(), "workbuddy-workspace");
+const WORKSPACE_ROOT = path__namespace.join(os__namespace.homedir(), "openbudy-workspace");
 function registerFileIpc() {
   electron.ipcMain.handle("file:read", async (_event, filePath) => {
     try {
@@ -1029,7 +1029,7 @@ function registerFileIpc() {
     return result.filePaths[0];
   });
 }
-const CONFIG_DIR = path__namespace.join(os__namespace.homedir(), ".workbuddy-clone");
+const CONFIG_DIR = path__namespace.join(os__namespace.homedir(), ".openbudy");
 const CONFIG_FILE = path__namespace.join(CONFIG_DIR, "config.json");
 async function ensureConfigDir() {
   try {
@@ -1066,13 +1066,39 @@ function registerStorageIpc() {
   });
 }
 let mainWindow = null;
+const devServerUrl = process.env.VITE_DEV_SERVER_URL;
+const COMMON_CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+  "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+  "font-src 'self' data: https://cdn.jsdelivr.net",
+  "img-src 'self' data: blob:",
+  "worker-src 'self' blob:",
+  "frame-src *",
+  "object-src 'none'",
+  "base-uri 'self'"
+];
+function buildCsp() {
+  const connectSrc = devServerUrl ? `connect-src 'self' ws: ${devServerUrl} https://cdn.jsdelivr.net` : "connect-src 'self' https://cdn.jsdelivr.net";
+  return [...COMMON_CSP, connectSrc].join("; ");
+}
+function installContentSecurityPolicy() {
+  const policy = buildCsp();
+  const appOrigin = devServerUrl ? new URL(devServerUrl).origin : null;
+  electron.session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    const isAppDocument = appOrigin ? details.url.startsWith(appOrigin) : details.url.startsWith("file://");
+    callback({
+      responseHeaders: isAppDocument ? { ...details.responseHeaders, "Content-Security-Policy": [policy] } : details.responseHeaders
+    });
+  });
+}
 function createWindow() {
   mainWindow = new electron.BrowserWindow({
     width: 1400,
     height: 900,
     minWidth: 1e3,
     minHeight: 600,
-    title: "WorkBuddy Clone",
+    title: "OpenBudy",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
@@ -1094,6 +1120,7 @@ function createWindow() {
   });
 }
 electron.app.whenReady().then(() => {
+  installContentSecurityPolicy();
   registerAgentIpc();
   registerFileIpc();
   registerStorageIpc();

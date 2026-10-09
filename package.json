@@ -1,7 +1,7 @@
 {
   "name": "openbudy",
   "version": "1.0.0",
-  "description": "A WorkBuddy-like AI Agent desktop workbench built with Electron + React + TypeScript + Ant Design",
+  "description": "OpenBudy — an AI Agent desktop workbench built with Electron + React + TypeScript + Ant Design",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
@@ -10,6 +10,12 @@
     "electron:dev": "vite",
     "electron:build": "vite build && electron-builder",
     "lint": "tsc --noEmit"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",

@@ -16,6 +16,7 @@ export default function ChatHeader() {
 
   return (
     <Flex
+      className="app-drag"
       align="center"
       justify="space-between"
       style={{
@@ -30,7 +31,7 @@ export default function ChatHeader() {
       >
         {task?.title ?? '未选择任务'}
       </Text>
-      <Flex align="center" gap={8}>
+      <Flex className="app-no-drag" align="center" gap={8}>
         <ModelSelector />
         <Tooltip title="搜索">
           <Button size="small" icon={<SearchOutlined />} />

@@ -1,4 +1,4 @@
-# WorkBuddy 复刻项目 — 产品需求规划文档 v3.1
+# OpenBudy — 产品需求规划文档 v3.1
 
 > **版本**：v3.1  
 > **日期**：2026-07-25  
@@ -33,17 +33,17 @@
 
 ### 1.1 背景
 
-2026 年，AI Agent 已从"对话式助手"进化到"执行式数字劳动力"。以 OpenClaw（315K GitHub Stars）为代表的开源 Agent 框架，以及以 WorkBuddy 为代表的商用产品，标志着 AI 能力从**生成建议**到**自主执行任务并交付结果**的范式转变。
+2026 年，AI Agent 已从"对话式助手"进化到"执行式数字劳动力"。以 OpenClaw（315K GitHub Stars）为代表的开源 Agent 框架，以及以商用智能体桌面工作台为代表的产品，标志着 AI 能力从**生成建议**到**自主执行任务并交付结果**的范式转变。
 
-WorkBuddy 是腾讯云 CodeBuddy 团队于 2026 年 3 月正式推出的全场景 AI 智能体桌面工作台，基于 OpenClaw 架构深度改造，支持自然语言驱动本地文件操作、多 Agent 并行执行、MCP 协议扩展和 IM 远程控制。上线后已在腾讯内部覆盖 2000+ 非技术员工，成为"腾讯版小龙虾"。
+上游商用产品是腾讯云 CodeBuddy 团队于 2026 年 3 月正式推出的全场景 AI 智能体桌面工作台，基于 OpenClaw 架构深度改造，支持自然语言驱动本地文件操作、多 Agent 并行执行、MCP 协议扩展和 IM 远程控制。上线后已在腾讯内部覆盖 2000+ 非技术员工，成为"腾讯版小龙虾"。
 
 ### 1.2 项目目标
 
-使用 TypeScript 实现一个功能复刻 WorkBuddy 的项目（以下简称"本项目"）：
+使用 TypeScript 实现一个功能复刻上游商用产品的项目（以下简称"本项目"）：
 
 | 维度 | 目标 |
 | ------ | ------ |
-| **功能完整度** | 覆盖 WorkBuddy 核心功能（任务系统、对话交互、结果展示、Agent Loop、扩展生态） |
+| **功能完整度** | 覆盖上游商用产品核心功能（任务系统、对话交互、结果展示、Agent Loop、扩展生态） |
 | **交互体验** | 三区域布局一致性、实时执行反馈、流畅的对话体验 |
 | **技术架构** | 可扩展的 Agent 框架、支持多模型接入、安全的沙箱执行环境 |
 | **可维护性** | 模块化设计、清晰的代码分层、良好的 TypeScript 类型定义 |
@@ -133,7 +133,7 @@ WorkBuddy 是腾讯云 CodeBuddy 团队于 2026 年 3 月正式推出的全场�
 
 ### 3.1 竞品矩阵
 
-| 维度 | **WorkBuddy** | **OpenClaw** | **Claude Computer Use** | **OpenAI Operator** | **阿里 PC-Agent** | **Manus AI** |
+| 维度 | **上游商用产品** | **OpenClaw** | **Claude Computer Use** | **OpenAI Operator** | **阿里 PC-Agent** | **Manus AI** |
 | ------ | :---: | :---: | :---: | :---: | :---: | :---: |
 | **产品定位** | 商用桌面 Agent | 开源 Agent 框架 | 安全可解释 Agent | 开发运维 Agent | 多智能体协作 | 文档代码生成 |
 | **GitHub Stars** | - | 315K | - | - | 开源 | - |
@@ -160,7 +160,7 @@ WorkBuddy 是腾讯云 CodeBuddy 团队于 2026 年 3 月正式推出的全场�
 - "消息即界面"降低使用门槛，但缺乏可视化管理后台
 - 安全是最大短板，需要企业级加固
 
-**WorkBuddy 的差异化策略**：
+**上游商用产品的差异化策略**：
 
 - 在 OpenClaw 基础上补齐了**可视化管理界面**（三区域布局 + 任务面板）
 - 增强了**企业级安全**（沙箱隔离 + 显式授权 + 审计日志）
@@ -168,9 +168,9 @@ WorkBuddy 是腾讯云 CodeBuddy 团队于 2026 年 3 月正式推出的全场�
 
 **本项目的市场机会**：
 
-- 开源社区没有"WorkBuddy 级别"的可视化 Agent 管理工具
-- 可以借鉴 WorkBuddy 的设计思路，打造一个 TypeScript 全栈的开源替代
-- 重点复刻 WorkBuddy 独有的三区域布局、任务管理、Skills 扩展等差异化功能
+- 开源社区没有"上游商用产品级别"的可视化 Agent 管理工具
+- 可以借鉴上游商用产品的设计思路，打造一个 TypeScript 全栈的开源替代
+- 重点复刻上游商用产品独有的三区域布局、任务管理、Skills 扩展等差异化功能
 
 ---
 
@@ -180,9 +180,9 @@ WorkBuddy 是腾讯云 CodeBuddy 团队于 2026 年 3 月正式推出的全场�
 
 > **一句话定位**：一个用 TypeScript 全栈（Electron + React + Antd）实现的 AI Agent 工作台，用户用自然语言描述需求，AI 自主规划、执行并交付完整结果。
 
-### 4.2 与 WorkBuddy 的差异化策略
+### 4.2 与上游商用产品的差异化策略
 
-| 维度 | WorkBuddy | 本项目策略 |
+| 维度 | 上游商用产品 | 本项目策略 |
 | ------ | ----------- | ----------- |
 | **技术栈** | 闭源桌面客户端 | 开源全栈 TypeScript（Electron + React） |
 | **部署** | 桌面安装包 | Electron 桌面应用（跨平台） |
@@ -331,7 +331,7 @@ WorkBuddy 是腾讯云 CodeBuddy 团队于 2026 年 3 月正式推出的全场�
 
 | ID | 需求描述 | EARS 类型 |
 | ---- | --------- | ----------- |
-| F2.1 | The system shall default the workspace root to `~/workbuddy-workspace/`. | Ubiquitous |
+| F2.1 | The system shall default the workspace root to `~/openbudy-workspace/`. | Ubiquitous |
 | F2.2 | Where the user selects a custom workspace directory, the system shall scope all file operations to that directory. | Optional |
 
 ---
@@ -532,7 +532,7 @@ createTask()
 ### 8.3 项目目录结构
 
 ```bash
-workbuddy-clone/
+openbudy/
 ├── electron/                    # Electron 主进程
 │   ├── main.ts                  # 主进程入口
 │   ├── preload.ts               # 预加载脚本（安全 API 桥接）
@@ -862,7 +862,7 @@ Skills 系统 + 浏览器自动化 + 内置浏览器预览 + 快捷键 + 响应�
 | SSE | Server-Sent Events | 服务端向客户端推送流式事件的技术 |
 | MCP | Model Context Protocol | 模型上下文协议，标准化 AI 模型与外部工具的交互 |
 | Function Calling | Function Calling | LLM 调用外部函数/工具的能力，通过 JSON Schema 定义 |
-| SKILL.md | SKILL.md | WorkBuddy 的技能定义文件，包含角色、SOP 和领域知识 |
+| SKILL.md | SKILL.md | 上游商用产品的技能定义文件，包含角色、SOP 和领域知识 |
 | IndexedDB | IndexedDB | 浏览器端的结构化数据存储，支持索引和事务 |
 | Zustand | Zustand | 轻量级 React 状态管理库 |
 | Dexie.js | Dexie.js | IndexedDB 的 Promise 风格封装库 |
@@ -888,7 +888,7 @@ Skills 系统 + 浏览器自动化 + 内置浏览器预览 + 快捷键 + 响应�
 | Q7 | 沙箱安全等级 | 进程级隔离（workspace 目录限制） |
 | Q8 | 浏览器自动化 | 放到 V1.1，MVP 聚焦核心闭环 |
 | Q10 | 多语言支持 | MVP 仅中文，后续扩展 i18n |
-| Q12 | 工作目录默认路径 | `~/workbuddy-workspace/` |
+| Q12 | 工作目录默认路径 | `~/openbudy-workspace/` |
 
 ### 待确认 ❓
 
@@ -914,8 +914,8 @@ Skills 系统 + 浏览器自动化 + 内置浏览器预览 + 快捷键 + 响应�
 
 > **附录**：参考资料列表
 >
-> - [WorkBuddy 官方文档](https://www.codebuddy.cn/docs/workbuddy/Overview)
-> - [WorkBuddy 产品技术概览](https://cloud.tencent.com/developer/article/2680488)
+> - [上游商用产品官方文档](https://www.codebuddy.cn/docs/workbuddy/Overview)
+> - [上游商用产品技术概览](https://cloud.tencent.com/developer/article/2680488)
 > - [OpenClaw 深度使用报告](https://cloud.tencent.com/developer/article/2639789)
 > - [桌面智能体选型指南 2026](https://www.betteryeah.com/blog/desktop-intelligent-agent-selection-guide-2026)
-> - [WorkBuddy 界面布局全拆解](https://cloud.tencent.com/developer/article/2693748)
+> - [上游商用产品界面布局全拆解](https://cloud.tencent.com/developer/article/2693748)

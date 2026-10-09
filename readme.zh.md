@@ -1,6 +1,6 @@
 <p align="center">
-  <h1 align="center">🤖 OpenBuddy</h1>
-  <p align="center"><strong>AI 智能体桌面工作台 — WorkBuddy 开源替代</strong></p>
+  <h1 align="center">🤖 OpenBudy</h1>
+  <p align="center"><strong>AI 智能体桌面工作台 — 商用 Agent 的开源替代</strong></p>
 </p>
 
 <p align="center">
@@ -16,11 +16,11 @@
 
 ---
 
-## 📖 什么是 OpenBuddy？
+## 📖 什么是 OpenBudy？
 
-OpenBuddy 是一个 **开源的 AI Agent 桌面工作台**，用 TypeScript 全栈实现。你只需用自然语言描述需求，OpenBuddy 就能**自主规划、执行并交付完整结果**。
+OpenBudy 是一个 **开源的 AI Agent 桌面工作台**，用 TypeScript 全栈实现。你只需用自然语言描述需求，OpenBudy 就能**自主规划、执行并交付完整结果**。
 
-它是腾讯 WorkBuddy 的功能级开源替代，将 AI Agent 的执行能力与精美的可视化管理界面合二为一。
+它是商用 AI 智能体桌面工作台的功能级开源替代，将 AI Agent 的执行能力与精美的可视化管理界面合二为一。
 
 ### ✨ 亮点
 
@@ -141,7 +141,7 @@ openbudy/
 
 ## 🧠 Agent Loop 执行流程
 
-OpenBuddy 的 Agent 遵循五阶段循环执行：
+OpenBudy 的 Agent 遵循五阶段循环执行：
 
 ```
 ANALYZE  分析  →  解析用户意图、识别任务类型
@@ -228,4 +228,4 @@ pnpm electron:build
 
 ## 📄 开源协议
 
-MIT © OpenBuddy Contributors
+MIT © OpenBudy Contributors

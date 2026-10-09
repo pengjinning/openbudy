@@ -3,7 +3,7 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import * as os from 'os'
 
-const CONFIG_DIR = path.join(os.homedir(), '.workbuddy-clone')
+const CONFIG_DIR = path.join(os.homedir(), '.openbudy')
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json')
 
 async function ensureConfigDir() {
