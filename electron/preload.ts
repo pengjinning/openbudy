@@ -24,6 +24,8 @@ export interface ElectronAPI {
   fileMkdir: (dirPath: string) => Promise<void>
   getWorkspacePath: (taskId: string) => Promise<string>
   selectDirectory: () => Promise<string | null>
+  openPath: (filePath: string) => Promise<boolean>
+  openInFolder: (filePath: string) => Promise<boolean>
 
   // Storage
   storageGet: (key: string) => Promise<unknown>
@@ -49,6 +51,8 @@ const api: ElectronAPI = {
   fileMkdir: (dirPath) => ipcRenderer.invoke('file:mkdir', dirPath),
   getWorkspacePath: (taskId) => ipcRenderer.invoke('file:getWorkspacePath', taskId),
   selectDirectory: () => ipcRenderer.invoke('file:selectDirectory'),
+  openPath: (filePath) => ipcRenderer.invoke('file:openPath', filePath),
+  openInFolder: (filePath) => ipcRenderer.invoke('file:openInFolder', filePath),
 
   // Storage
   storageGet: (key) => ipcRenderer.invoke('storage:get', key),

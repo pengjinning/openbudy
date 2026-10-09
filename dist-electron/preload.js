@@ -1,1 +1,27 @@
-"use strict";const r=require("electron"),n={agentExecute:e=>r.ipcRenderer.invoke("agent:execute",e),agentStop:e=>r.ipcRenderer.send("agent:stop",e),onAgentEvent:e=>{const t=(o,i)=>e(i);return r.ipcRenderer.on("agent:event",t),()=>r.ipcRenderer.removeListener("agent:event",t)},fileRead:e=>r.ipcRenderer.invoke("file:read",e),fileWrite:(e,t)=>r.ipcRenderer.invoke("file:write",e,t),fileList:e=>r.ipcRenderer.invoke("file:list",e),fileDelete:e=>r.ipcRenderer.invoke("file:delete",e),fileMkdir:e=>r.ipcRenderer.invoke("file:mkdir",e),getWorkspacePath:e=>r.ipcRenderer.invoke("file:getWorkspacePath",e),selectDirectory:()=>r.ipcRenderer.invoke("file:selectDirectory"),storageGet:e=>r.ipcRenderer.invoke("storage:get",e),storageSet:(e,t)=>r.ipcRenderer.invoke("storage:set",e,t),storageDelete:e=>r.ipcRenderer.invoke("storage:delete",e)};r.contextBridge.exposeInMainWorld("electronAPI",n);
+"use strict";
+const electron = require("electron");
+const api = {
+  // Agent
+  agentExecute: (params) => electron.ipcRenderer.invoke("agent:execute", params),
+  agentStop: (taskId) => electron.ipcRenderer.send("agent:stop", taskId),
+  onAgentEvent: (callback) => {
+    const handler = (_event, data) => callback(data);
+    electron.ipcRenderer.on("agent:event", handler);
+    return () => electron.ipcRenderer.removeListener("agent:event", handler);
+  },
+  // File
+  fileRead: (filePath) => electron.ipcRenderer.invoke("file:read", filePath),
+  fileWrite: (filePath, content) => electron.ipcRenderer.invoke("file:write", filePath, content),
+  fileList: (dirPath) => electron.ipcRenderer.invoke("file:list", dirPath),
+  fileDelete: (filePath) => electron.ipcRenderer.invoke("file:delete", filePath),
+  fileMkdir: (dirPath) => electron.ipcRenderer.invoke("file:mkdir", dirPath),
+  getWorkspacePath: (taskId) => electron.ipcRenderer.invoke("file:getWorkspacePath", taskId),
+  selectDirectory: () => electron.ipcRenderer.invoke("file:selectDirectory"),
+  openPath: (filePath) => electron.ipcRenderer.invoke("file:openPath", filePath),
+  openInFolder: (filePath) => electron.ipcRenderer.invoke("file:openInFolder", filePath),
+  // Storage
+  storageGet: (key) => electron.ipcRenderer.invoke("storage:get", key),
+  storageSet: (key, value) => electron.ipcRenderer.invoke("storage:set", key, value),
+  storageDelete: (key) => electron.ipcRenderer.invoke("storage:delete", key)
+};
+electron.contextBridge.exposeInMainWorld("electronAPI", api);

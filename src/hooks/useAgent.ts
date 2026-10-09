@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { message as antdMessage } from 'antd'
+import { App as AntdApp } from 'antd'
 import type {
   AgentEvent,
   AgentStatusChange,
@@ -31,6 +31,7 @@ interface UseAgentReturn {
 
 export function useAgent(taskId: string | null): UseAgentReturn {
   const [isRunning, setIsRunning] = useState(false)
+  const { message: antdMessage } = AntdApp.useApp()
   const unsubscribeRef = useRef<(() => void) | null>(null)
 
   const chatStore = useChatStore
@@ -197,7 +198,7 @@ export function useAgent(taskId: string | null): UseAgentReturn {
         antdMessage.error(result.error ?? 'Agent 执行失败')
       }
     },
-    [taskId, chatStore, taskStore, settingsStore]
+    [taskId, chatStore, taskStore, settingsStore, antdMessage]
   )
 
   const stop = useCallback(() => {

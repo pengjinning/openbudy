@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { message as antdMessage } from 'antd'
+import { App as AntdApp } from 'antd'
 import { ipc } from '../services/ipc'
 
 interface UploadedFile {
@@ -19,6 +19,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 export function useFileUpload(taskId: string | null): UseFileUploadReturn {
   const [uploading, setUploading] = useState(false)
   const [fileList, setFileList] = useState<UploadedFile[]>([])
+  const { message: antdMessage } = AntdApp.useApp()
 
   const upload = useCallback(
     async (file: File): Promise<UploadedFile | null> => {
@@ -61,7 +62,7 @@ export function useFileUpload(taskId: string | null): UseFileUploadReturn {
         setUploading(false)
       }
     },
-    [taskId]
+    [taskId, antdMessage]
   )
 
   return { upload, uploading, fileList }

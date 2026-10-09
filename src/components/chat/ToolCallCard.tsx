@@ -1,12 +1,16 @@
-import { Collapse, Tag } from 'antd'
+import { Collapse, Tag, Button, Tooltip, App as AntdApp } from 'antd'
 import type { CollapseProps } from 'antd'
 import {
   LoadingOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  FileOutlined,
+  FolderOpenOutlined,
 } from '@ant-design/icons'
 import type { ToolCall, ToolResult } from '../../types'
 import { useThemeToken } from '../../hooks/useThemeToken'
+import { useTaskStore } from '../../stores/taskStore'
+import { ipc } from '../../services/ipc'
 
 interface ToolCallCardProps {
   toolCall: ToolCall
@@ -17,6 +21,38 @@ export default function ToolCallCard({ toolCall, result }: ToolCallCardProps) {
   const hasResult = !!result
   const isError = result?.isError
   const { token } = useThemeToken()
+  const { message } = AntdApp.useApp()
+
+  const selectedTaskId = useTaskStore((s) => s.selectedTaskId)
+  const tasks = useTaskStore((s) => s.tasks)
+  const task = tasks.find((t) => t.id === selectedTaskId)
+
+  // file_write 成功后提供"打开文件 / 打开所在目录"操作
+  // 注：渲染进程无 Node path 模块，用简单拼接（主进程侧会规范化）
+  const isSuccessfulWrite =
+    toolCall.name === 'file_write' && hasResult && !isError
+  const writtenFile =
+    isSuccessfulWrite && task?.workspacePath
+      ? `${task.workspacePath.replace(/\/+$/, '')}/${String(toolCall.arguments?.path ?? '').replace(/^\/+/, '')}`
+      : null
+
+  const handleOpenFile = async () => {
+    if (!writtenFile) return
+    try {
+      await ipc.openPath(writtenFile)
+    } catch (e) {
+      void message.error(`打开文件失败：${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
+
+  const handleOpenFolder = async () => {
+    if (!writtenFile) return
+    try {
+      await ipc.openInFolder(writtenFile)
+    } catch (e) {
+      void message.error(`打开目录失败：${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
 
   let statusTag = (
     <Tag color="blue" icon={<LoadingOutlined />}>
@@ -48,6 +84,32 @@ export default function ToolCallCard({ toolCall, result }: ToolCallCardProps) {
         {toolCall.name}
       </span>
       {statusTag}
+      {writtenFile && (
+        <span style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
+          <Tooltip title={`打开文件：${toolCall.arguments?.path}`}>
+            <Button
+              size="small"
+              type="text"
+              icon={<FileOutlined />}
+              onClick={(e) => {
+                e.stopPropagation()
+                void handleOpenFile()
+              }}
+            />
+          </Tooltip>
+          <Tooltip title="打开所在目录">
+            <Button
+              size="small"
+              type="text"
+              icon={<FolderOpenOutlined />}
+              onClick={(e) => {
+                e.stopPropagation()
+                void handleOpenFolder()
+              }}
+            />
+          </Tooltip>
+        </span>
+      )}
     </div>
   )
 

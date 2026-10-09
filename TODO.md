@@ -11,5 +11,5 @@
 - [x] 修改 deepseek-chat、deepseek v3 模型为 deepseek-flash 和 deepseek-v4-pro
 - [x] 使用antd splitter支持调整界面左侧和右侧栏的宽度
 - [x] 只有配置智谱api key的tab，没有看到配置deepseek api key的入口，需要添加
-- [] agent使用file_write创建文件之后，需要在消息气泡增加按钮，支持打开这个文件或打开文件所在目录
+- [x] agent使用file_write创建文件之后，需要在消息气泡增加按钮，支持打开这个文件或打开文件所在目录
 - [] 在设置api key页面中支持直接使用默认浏览器打开相应的provider的官网，不要使用modal弹窗

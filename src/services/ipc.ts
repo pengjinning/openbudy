@@ -33,6 +33,8 @@ interface ElectronAPI {
   fileMkdir: (dirPath: string) => Promise<void>
   getWorkspacePath: (taskId: string) => Promise<string>
   selectDirectory: () => Promise<string | null>
+  openPath: (filePath: string) => Promise<boolean>
+  openInFolder: (filePath: string) => Promise<boolean>
   storageGet: (key: string) => Promise<unknown>
   storageSet: (key: string, value: unknown) => Promise<void>
   storageDelete: (key: string) => Promise<void>
@@ -101,8 +103,8 @@ function mockAgentExecute(params: {
       type: 'tool_call',
       data: {
         toolCallId: `call-${taskId}-${now}`,
-        toolName: 'read_file',
-        arguments: { path: 'README.md' },
+        toolName: 'file_write',
+        arguments: { path: 'demo/hello.md', content: '# Hello\nmock 写入内容' },
       } satisfies AgentToolCallEvent,
       delay: 1200,
     },
@@ -110,8 +112,8 @@ function mockAgentExecute(params: {
       type: 'tool_result',
       data: {
         toolCallId: `call-${taskId}-${now}`,
-        toolName: 'read_file',
-        output: '文件内容读取成功（mock）',
+        toolName: 'file_write',
+        output: '已写入文件：demo/hello.md（28 bytes）',
         isError: false,
       } satisfies AgentToolResultEvent,
       delay: 1600,
@@ -176,6 +178,8 @@ function createIpc(): ElectronAPI {
     },
     getWorkspacePath: async (taskId: string) => `~/openbudy-workspace/${taskId}/`, // mock：主进程会展开 ~
     selectDirectory: async () => '~/openbudy-workspace/',
+    openPath: async (_filePath: string) => true,
+    openInFolder: async (_filePath: string) => true,
     storageGet: async (key: string) => mockStorage.get(key),
     storageSet: async (key: string, value: unknown) => {
       mockStorage.set(key, value)
