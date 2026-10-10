@@ -7,11 +7,9 @@ const config: Config = {
   tagline: '用 TypeScript + Electron + pi-ai 从零构建桌面 AI Agent',
   favicon: 'img/favicon.ico',
 
-  // 部署时改为你的仓库地址，如：
-  // url: 'https://your-name.github.io',
-  // baseUrl: '/openbudy/',
-  url: 'http://localhost:3001',
-  baseUrl: '/',
+  // GitHub Pages 部署配置（项目站点 <user>.github.io/<repo>/ 需要带前缀）
+  url: 'https://pengjinning.github.io',
+  baseUrl: '/openbudy/',
 
   onBrokenLinks: 'warn',
 
@@ -63,6 +61,16 @@ const config: Config = {
           docId: 'intro/what-is-agent',
           position: 'left',
           label: '教程',
+        },
+        {
+          href: 'https://www.weiyuai.cn',
+          position: 'right',
+          label: '微语官网',
+        },
+        {
+          href: 'https://github.com/Bytedesk/bytedesk',
+          position: 'right',
+          label: '开源智能客服',
         },
         {
           href: 'https://github.com/pengjinning/openbudy',
