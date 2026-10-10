@@ -1,6 +1,5 @@
 ---
 sidebar_position: 8
-sidebar_label: 8. Agent Loop 核心循环
 title: 第 8 章 · Agent Loop：从对话到自主执行
 description: 核心循环逐段精读：消息构建、流式消费、工具执行与结果回填
 ---
