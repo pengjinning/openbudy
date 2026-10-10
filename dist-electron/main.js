@@ -21340,12 +21340,20 @@ async function* chatStreamViaPiAi(messages, modelConfig, tools, signal) {
         const errMsg = ((_a3 = e.error) == null ? void 0 : _a3.errorMessage) ?? "LLM 流式响应错误";
         throw new Error(`LLM 请求失败: ${errMsg}`);
       }
-      case "done":
+      case "done": {
+        const msg = e.message;
+        const thinking = msg.content.filter(
+          (c) => c.type === "thinking"
+        ).map((c) => c.thinking).join("\n");
         yield {
           type: "done",
-          finishReason: e.message.stopReason === "toolUse" ? "tool_calls" : "stop"
+          finishReason: msg.stopReason === "toolUse" ? "tool_calls" : "stop",
+          usage: msg.usage,
+          thinking: thinking || void 0,
+          durationMs: msg.durationMs
         };
         return;
+      }
     }
   }
   if (!sawError) {
@@ -21866,6 +21874,29 @@ async function start(params, onEvent) {
     let assistantText = "";
     let assistantToolCalls = [];
     let finishReason;
+    const debugRequest = {
+      iteration,
+      model: {
+        id: modelConfig.id,
+        name: modelConfig.name,
+        provider: modelConfig.provider,
+        baseUrl: modelConfig.baseUrl
+      },
+      systemPrompt,
+      messages: messages.slice(1).map((m) => {
+        const copy = { role: m.role, content: m.content };
+        if (m.tool_calls) copy.tool_calls = m.tool_calls;
+        if (m.tool_call_id) copy.tool_call_id = m.tool_call_id;
+        return copy;
+      }),
+      tools: tools.map((t) => ({
+        name: t.function.name,
+        description: t.function.description,
+        parameters: t.function.parameters
+      }))
+    };
+    onEvent(emit(taskId, "llm_request", debugRequest));
+    const llmStartAt = Date.now();
     try {
       for await (const chunk of chatStreamViaPiAi(messages, modelConfig, tools, signal)) {
         if (chunk.type === "text" && chunk.content) {
@@ -21893,9 +21924,47 @@ async function start(params, onEvent) {
           );
         } else if (chunk.type === "done") {
           finishReason = chunk.finishReason;
+          const debugResponse = {
+            iteration,
+            model: {
+              id: modelConfig.id,
+              name: modelConfig.name,
+              provider: modelConfig.provider
+            },
+            text: assistantText,
+            thinking: chunk.thinking,
+            toolCalls: assistantToolCalls.map((tc) => {
+              let parsedArgs = {};
+              try {
+                parsedArgs = tc.arguments ? JSON.parse(tc.arguments) : {};
+              } catch {
+                parsedArgs = { _raw: tc.arguments };
+              }
+              return { id: tc.id, name: tc.name, arguments: parsedArgs };
+            }),
+            finishReason: chunk.finishReason,
+            usage: chunk.usage,
+            durationMs: chunk.durationMs ?? Date.now() - llmStartAt
+          };
+          onEvent(emit(taskId, "llm_response", debugResponse));
         }
       }
     } catch (err) {
+      const errMsg = err instanceof Error && err.name === "AbortError" ? "任务已被用户取消" : err instanceof Error ? err.message : String(err);
+      onEvent(
+        emit(taskId, "llm_response", {
+          iteration,
+          model: {
+            id: modelConfig.id,
+            name: modelConfig.name,
+            provider: modelConfig.provider
+          },
+          text: assistantText,
+          toolCalls: [],
+          error: errMsg,
+          durationMs: Date.now() - llmStartAt
+        })
+      );
       if (err instanceof Error && err.name === "AbortError") {
         onEvent(emit(taskId, "error", { message: "任务已被用户取消" }));
         onEvent(

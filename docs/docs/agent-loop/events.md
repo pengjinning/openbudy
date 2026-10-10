@@ -19,6 +19,8 @@ type AgentEvent =
   | { type: 'text_delta';    data: AgentTextDelta }        // 流式文本增量
   | { type: 'tool_call';     data: AgentToolCallEvent }    // 模型发起调用
   | { type: 'tool_result';   data: AgentToolResultEvent }  // 工具执行结果
+  | { type: 'llm_request';   data: AgentLLMRequestEvent }  // 🔍 调试：完整请求
+  | { type: 'llm_response';  data: AgentLLMResponseEvent } // 🔍 调试：完整响应
   | { type: 'task_complete'; data: ... }                   // ✅ 正常结束
   | { type: 'error';         data: { message: string } }   // ❌ 失败/取消/超时
 
@@ -171,8 +173,65 @@ const execute = async (userMessage: string) => {
 | `thinking` | 消息区 | 「思考中 · 第 N 轮」状态条 |
 | `status_change` | `TaskCard.tsx` | 任务状态徽标 |
 | `task_complete` | ChatInput | 停止按钮复位为发送 |
+| `llm_request` + `llm_response` | `DebugTraces.tsx` | 右侧「调试」tab：完整请求/响应时间线 |
 
-## 9.6 实战：给事件流加「耗时统计」
+## 9.6 实战：LLM 调试面板（llm_request / llm_response）
+
+`text_delta` 只推送增量文本，无法回答「模型到底收到了什么、返回了什么」——排查提示词、工具定义、token 用量问题时，我们需要**原始请求与响应**。这就是 `llm_request` / `llm_response` 两个事件的用途。
+
+**① loop 中发事件**（`agent-core/loop.ts`，每次 LLM 调用各发一次）：
+
+```ts
+// 请求：system + 完整 messages（含用户输入与历史）+ tools 定义 + 模型信息
+onEvent(emit(taskId, 'llm_request', {
+  iteration,
+  model: { id, name, provider, baseUrl },
+  systemPrompt,
+  messages: messages.slice(1),   // 去掉 system（单独承载）
+  tools: tools.map(...),
+}))
+
+// 响应：在 done chunk 里携带聚合结果
+onEvent(emit(taskId, 'llm_response', {
+  iteration, model, text,        // 本轮回复全文
+  thinking,                      // 推理模型思考过程
+  toolCalls,                     // 结构化工具调用（含解析后的参数）
+  usage,                         // token 用量与成本
+  durationMs,                    // 耗时
+}))
+```
+
+请求失败时同样发 `llm_response`（带 `error` 字段），便于排查网络/鉴权问题。
+
+**② 渲染端用独立 store 收集**（`src/stores/debugStore.ts`）：
+
+调试数据体积大、时效短，不进 Dexie，只放内存 Zustand，并按任务限流（最多 200 条）：
+
+```ts
+const useDebugStore = create<DebugState>((set, get) => ({
+  tracesByTask: {},   // taskId → LLMTraceEntry[]
+  addRequest: (taskId, request) => { /* 按 iteration 配对入列 */ },
+  addResponse: (taskId, response) => { /* 挂到同 iteration 的条目上 */ },
+  clearTask, clearAll,
+}))
+```
+
+`useAgent` 的事件回调里只加两个 case，就完成全链路接入：
+
+```ts
+case 'llm_request':  debugStore.getState().addRequest(taskId, event.data); break
+case 'llm_response': debugStore.getState().addResponse(taskId, event.data); break
+```
+
+**③ 右侧面板展示**（`ResultTabs` 新增「调试」tab → `DebugTraces.tsx`）：
+
+- 时间线列表：每轮一个条目（迭代号 / 模型名 / 工具数 / 耗时 / 时间）
+- 展开后「请求 / 响应」两个视图切换：system prompt、messages JSON、tools 清单；思考过程、回复文本、工具调用、token 用量
+- 一键复制完整请求/响应 JSON；顶部统计总请求数、总 token；支持清空
+
+注意 `usage`/`thinking` 的来源：pi-ai 的 `done` 事件携带最终 `AssistantMessage`（含 `usage`、`durationMs`、thinking 内容块），`chatStreamViaPiAi` 把它们塞进 `done` chunk 一并向上传递——loop 层无需二次请求即可拿到聚合统计。
+
+## 9.7 实战：给事件流加「耗时统计」
 
 目标：任务完成后显示总耗时与工具调用次数。
 
@@ -214,11 +273,12 @@ case 'task_complete':
 
 （`Task` 类型加对应字段，`TaskCard` 展示即可。）这个练习打通了「loop → 事件 → store → UI」全链路。
 
-## 9.7 小结
+## 9.8 小结
 
-- 七种事件构成判别联合，`taskId` 路由 + `switch` 收窄，类型安全贯穿三端
+- 九种事件构成判别联合，`taskId` 路由 + `switch` 收窄，类型安全贯穿三端
 - `AbortController` 一份信号贯通 LLM 流与工具执行，取消即时生效
 - 占位消息 + appendTextDelta 是流式 UI 的标准做法
+- `llm_request` / `llm_response` 捕获原始载荷，是调试提示词与工具定义的第一手资料
 - Zustand 在事件回调中用 `getState()` 命令式更新，组件层响应式订阅
 
 **思考题**：如果 `text_delta` 每秒推送 50 次，每次都触发 React 重渲染整个消息列表，会有性能问题吗？如何优化？（提示：虚拟化列表、节流合并 delta、把流式消息隔离成独立组件减少重渲染范围）

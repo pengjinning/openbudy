@@ -4,6 +4,7 @@ import type { TabsProps } from 'antd'
 import FileTree from './FileTree'
 import DiffView from './DiffView'
 import BrowserPreview from './BrowserPreview'
+import DebugTraces from './DebugTraces'
 import { useTaskStore } from '../../stores/taskStore'
 import { useResultStore } from '../../stores/resultStore'
 import { useThemeToken } from '../../hooks/useThemeToken'
@@ -85,6 +86,7 @@ export default function ResultTabs() {
   const items: TabsProps['items'] = [
     { key: 'overview', label: '概览', children: overviewContent },
     { key: 'artifacts', label: '产物', children: artifactsContent },
+    { key: 'debug', label: '调试', children: <DebugTraces /> },
   ]
 
   return <Tabs defaultActiveKey="overview" items={items} size="small" />

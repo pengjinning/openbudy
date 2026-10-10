@@ -1,5 +1,8 @@
 import type {
   AgentEvent,
+  AgentLLMRequestEvent,
+  AgentLLMResponseEvent,
+  DebugLLMMessage,
   ModelConfig,
   ToolCall,
   ToolResult,
@@ -165,6 +168,32 @@ export async function start(
     }> = []
     let finishReason: string | undefined
 
+    // 调试：发送本次请求的全量 payload（system + history + user 输入 + tools 定义）
+    const debugRequest: AgentLLMRequestEvent = {
+      iteration,
+      model: {
+        id: modelConfig.id,
+        name: modelConfig.name,
+        provider: modelConfig.provider,
+        baseUrl: modelConfig.baseUrl,
+      },
+      systemPrompt,
+      messages: messages.slice(1).map((m): DebugLLMMessage => {
+        const copy: DebugLLMMessage = { role: m.role, content: m.content }
+        if (m.tool_calls) copy.tool_calls = m.tool_calls
+        if (m.tool_call_id) copy.tool_call_id = m.tool_call_id
+        return copy
+      }),
+      tools: tools.map((t) => ({
+        name: t.function.name,
+        description: t.function.description,
+        parameters: t.function.parameters,
+      })),
+    }
+    onEvent(emit(taskId, 'llm_request', debugRequest))
+
+    const llmStartAt = Date.now()
+
     try {
       for await (const chunk of chatStreamViaPiAi(messages, modelConfig, tools, signal)) {
         if (chunk.type === 'text' && chunk.content) {
@@ -195,9 +224,54 @@ export async function start(
           )
         } else if (chunk.type === 'done') {
           finishReason = chunk.finishReason
+          // 调试：记录本次响应的完整内容（文本 / 工具调用 / 用量 / 思考）
+          const debugResponse: AgentLLMResponseEvent = {
+            iteration,
+            model: {
+              id: modelConfig.id,
+              name: modelConfig.name,
+              provider: modelConfig.provider,
+            },
+            text: assistantText,
+            thinking: chunk.thinking,
+            toolCalls: assistantToolCalls.map((tc) => {
+              let parsedArgs: Record<string, unknown> = {}
+              try {
+                parsedArgs = tc.arguments ? JSON.parse(tc.arguments) : {}
+              } catch {
+                parsedArgs = { _raw: tc.arguments }
+              }
+              return { id: tc.id, name: tc.name, arguments: parsedArgs }
+            }),
+            finishReason: chunk.finishReason,
+            usage: chunk.usage,
+            durationMs: chunk.durationMs ?? Date.now() - llmStartAt,
+          }
+          onEvent(emit(taskId, 'llm_response', debugResponse))
         }
       }
     } catch (err) {
+      // 调试：请求失败也记录，便于排查
+      const errMsg =
+        err instanceof Error && err.name === 'AbortError'
+          ? '任务已被用户取消'
+          : err instanceof Error
+            ? err.message
+            : String(err)
+      onEvent(
+        emit(taskId, 'llm_response', {
+          iteration,
+          model: {
+            id: modelConfig.id,
+            name: modelConfig.name,
+            provider: modelConfig.provider,
+          },
+          text: assistantText,
+          toolCalls: [],
+          error: errMsg,
+          durationMs: Date.now() - llmStartAt,
+        } satisfies AgentLLMResponseEvent)
+      )
       if (err instanceof Error && err.name === 'AbortError') {
         onEvent(emit(taskId, 'error', { message: '任务已被用户取消' }))
         onEvent(

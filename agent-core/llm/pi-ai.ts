@@ -314,13 +314,26 @@ export async function* chatStreamViaPiAi(
         // 必须显式抛出，否则错误被静默吞掉（对齐 openclaw-mini agent-loop 处理）
         throw new Error(`LLM 请求失败: ${errMsg}`)
       }
-      case 'done':
+      case 'done': {
+        // 调试信息：从最终 AssistantMessage 提取思考内容与 token 用量
+        const msg = e.message
+        const thinking = msg.content
+          .filter(
+            (c): c is Extract<typeof c, { type: 'thinking' }> =>
+              c.type === 'thinking'
+          )
+          .map((c) => c.thinking)
+          .join('\n')
         yield {
           type: 'done',
           finishReason:
-            e.message.stopReason === 'toolUse' ? 'tool_calls' : 'stop',
+            msg.stopReason === 'toolUse' ? 'tool_calls' : 'stop',
+          usage: msg.usage,
+          thinking: thinking || undefined,
+          durationMs: msg.durationMs,
         }
         return
+      }
       default:
         break
     }

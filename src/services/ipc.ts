@@ -1,6 +1,8 @@
 import type {
   AgentEvent,
   AgentEventType,
+  AgentLLMRequestEvent,
+  AgentLLMResponseEvent,
   AgentStatusChange,
   AgentTextDelta,
   AgentToolCallEvent,
@@ -76,12 +78,40 @@ function mockAgentExecute(params: {
   const { taskId, userMessage } = params
   const now = Date.now()
 
-  // 模拟事件序列：status_change → text_delta(多次) → tool_call → tool_result → task_complete
+  // 模拟事件序列：status_change → llm_request → text_delta(多次) → tool_call → tool_result → llm_response → task_complete
   const events: Array<{ type: AgentEventType; data: unknown; delay: number }> = [
     {
       type: 'status_change',
       data: { status: 'running', message: 'Agent 启动中...' } satisfies AgentStatusChange,
       delay: 100,
+    },
+    {
+      type: 'llm_request',
+      data: {
+        iteration: 1,
+        model: {
+          id: params.modelConfig.id,
+          name: params.modelConfig.name,
+          provider: params.modelConfig.provider,
+          baseUrl: params.modelConfig.baseUrl,
+        },
+        systemPrompt: 'You are a helpful assistant. (mock system prompt)',
+        messages: [
+          { role: 'user', content: userMessage },
+          ...params.historyMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        ],
+        tools: [
+          {
+            name: 'file_write',
+            description: '写入文件（mock 工具定义）',
+            parameters: {},
+          },
+        ],
+      } satisfies AgentLLMRequestEvent,
+      delay: 200,
     },
     {
       type: 'text_delta',
@@ -117,6 +147,36 @@ function mockAgentExecute(params: {
         isError: false,
       } satisfies AgentToolResultEvent,
       delay: 1600,
+    },
+    {
+      type: 'llm_response',
+      data: {
+        iteration: 1,
+        model: {
+          id: params.modelConfig.id,
+          name: params.modelConfig.name,
+          provider: params.modelConfig.provider,
+        },
+        text: `收到指令："${userMessage}"\n\n我正在分析你的需求，下面将调用工具演示流程。`,
+        toolCalls: [
+          {
+            id: `call-${taskId}-${now}`,
+            name: 'file_write',
+            arguments: { path: 'demo/hello.md', content: '# Hello\nmock 写入内容' },
+          },
+        ],
+        finishReason: 'tool_calls',
+        usage: {
+          input: 128,
+          output: 64,
+          cacheRead: 0,
+          cacheWrite: 0,
+          totalTokens: 192,
+          cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
+        },
+        durationMs: 1200,
+      } satisfies AgentLLMResponseEvent,
+      delay: 1650,
     },
     {
       type: 'task_complete',

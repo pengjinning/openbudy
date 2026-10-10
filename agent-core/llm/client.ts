@@ -22,6 +22,25 @@ export interface LLMChunk {
   content?: string
   toolCall?: { id: string; name: string; arguments: string }
   finishReason?: string
+  /** 调试信息（done chunk 携带）：token 用量与耗时 */
+  usage?: {
+    input: number
+    output: number
+    cacheRead: number
+    cacheWrite: number
+    totalTokens: number
+    cost: {
+      input: number
+      output: number
+      cacheRead: number
+      cacheWrite: number
+      total: number
+    }
+  }
+  /** 调试信息（done chunk 携带）：推理模型思考过程 */
+  thinking?: string
+  /** 调试信息（done chunk 携带）：本次请求耗时 */
+  durationMs?: number
 }
 
 /**

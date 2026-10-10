@@ -50,6 +50,9 @@ export type AgentEventType =
   | 'task_complete'
   | 'error'
   | 'status_change'
+  // 调试：LLM 原始请求 / 响应（含用户输入、system、history、tools 定义）
+  | 'llm_request'
+  | 'llm_response'
 
 export interface AgentEvent {
   type: AgentEventType
@@ -79,6 +82,77 @@ export interface AgentToolResultEvent {
 export interface AgentStatusChange {
   status: TaskStatus
   message?: string
+}
+
+// ==================== LLM 调试 trace 类型 ====================
+
+/** 调试用 LLM 消息（OpenAI 风格），与 agent-core/llm/client.ts 的 LLMMessage 对齐 */
+export interface DebugLLMMessage {
+  role: string
+  content: string
+  tool_calls?: Array<{
+    id: string
+    type: 'function'
+    function: { name: string; arguments: string }
+  }>
+  tool_call_id?: string
+}
+
+/** 调试用工具定义（OpenAI function 格式） */
+export interface DebugToolDefinition {
+  name: string
+  description: string
+  parameters: unknown
+}
+
+export interface AgentLLMRequestEvent {
+  /** 第几轮 LLM 调用（从 1 开始） */
+  iteration: number
+  model: {
+    id: string
+    name: string
+    provider: string
+    baseUrl: string
+  }
+  systemPrompt: string
+  messages: DebugLLMMessage[]
+  tools: DebugToolDefinition[]
+}
+
+export interface AgentLLMUsage {
+  input: number
+  output: number
+  cacheRead: number
+  cacheWrite: number
+  totalTokens: number
+  cost: {
+    input: number
+    output: number
+    cacheRead: number
+    cacheWrite: number
+    total: number
+  }
+}
+
+export interface AgentLLMResponseEvent {
+  iteration: number
+  model: {
+    id: string
+    name: string
+    provider: string
+  }
+  text: string
+  /** 模型思考过程（推理模型），来自 pi-ai thinking 内容块 */
+  thinking?: string
+  toolCalls: Array<{
+    id: string
+    name: string
+    arguments: Record<string, unknown>
+  }>
+  finishReason?: string
+  usage?: AgentLLMUsage
+  durationMs?: number
+  error?: string
 }
 
 // ==================== 文件/产物类型 ====================

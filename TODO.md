@@ -15,4 +15,7 @@
 - [x] 在设置api key页面中支持直接使用默认浏览器打开相应的provider的官网，不要使用modal弹窗
 - [x] 对于右侧文件树中的文件，也支持打开文件和打开文件夹，类似消息气泡中
 - [x] 右侧列也支持通过拖拽拖动electron窗口
-- [] 当前项目是一个agent实战项目，帮我使用 docusaurus 在 docs 文件夹帮我生成相应的文档，文档目的介绍通过typescript + electron + pi 实现agent的实战入门教程。首先需要介绍一下用到的electron基本知识，比如ipc及其使用，然后介绍用到llm/pi/tools/agentloop等，注意需要由浅入深，分多个章节，注重实战。首先帮我在plans中生成相应的规划文档，待我确定之后，再实现
+- [x] 当前项目是一个agent实战项目，帮我使用 docusaurus 在 docs 文件夹帮我生成相应的文档，文档目的介绍通过typescript + electron + pi 实现agent的实战入门教程。首先需要介绍一下用到的electron基本知识，比如ipc及其使用，然后介绍用到llm/pi/tools/agentloop等，注意需要由浅入深，分多个章节，注重实战。首先帮我在plans中生成相应的规划文档，待我确定之后，再实现
+- [] 在右侧增加显示所有模型请求 和 模型返回内容，包括用户输入以及tools等，用于调试
+- [] 参考pi文档，增加支持skills，并同步更新docs中教程
+- [] 参考pi文档，增加支持mcp，并同步更新docs中教程

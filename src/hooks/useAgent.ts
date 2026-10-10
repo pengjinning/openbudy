@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { App as AntdApp } from 'antd'
 import type {
   AgentEvent,
+  AgentLLMRequestEvent,
+  AgentLLMResponseEvent,
   AgentStatusChange,
   AgentTextDelta,
   AgentToolCallEvent,
@@ -11,6 +13,7 @@ import type {
 } from '../types'
 import { ipc } from '../services/ipc'
 import { useChatStore } from '../stores/chatStore'
+import { useDebugStore } from '../stores/debugStore'
 import { useTaskStore } from '../stores/taskStore'
 import { useSettingsStore } from '../stores/settingsStore'
 import { DEFAULT_TASK_TITLE } from '../components/task/NewTaskButton'
@@ -35,6 +38,7 @@ export function useAgent(taskId: string | null): UseAgentReturn {
   const unsubscribeRef = useRef<(() => void) | null>(null)
 
   const chatStore = useChatStore
+  const debugStore = useDebugStore
   const taskStore = useTaskStore
   const settingsStore = useSettingsStore
 
@@ -54,6 +58,16 @@ export function useAgent(taskId: string | null): UseAgentReturn {
       if (agentEvent.taskId !== taskId) return
 
       switch (agentEvent.type) {
+        case 'llm_request': {
+          const data = agentEvent.data as AgentLLMRequestEvent
+          debugStore.getState().addRequest(taskId, data)
+          break
+        }
+        case 'llm_response': {
+          const data = agentEvent.data as AgentLLMResponseEvent
+          debugStore.getState().addResponse(taskId, data)
+          break
+        }
         case 'text_delta': {
           const data = agentEvent.data as AgentTextDelta
           chatStore.getState().appendTextDelta(taskId, data.content)
@@ -109,7 +123,7 @@ export function useAgent(taskId: string | null): UseAgentReturn {
       unsubscribe()
       unsubscribeRef.current = null
     }
-  }, [taskId, chatStore, taskStore])
+  }, [taskId, chatStore, taskStore, debugStore, antdMessage])
 
   const execute = useCallback(
     async (userMessage: string) => {
