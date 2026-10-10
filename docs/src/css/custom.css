@@ -1,0 +1,21 @@
+/**
+ * 自定义样式：中文排版微调
+ */
+.markdown h1 {
+  letter-spacing: 0.01em;
+}
+
+.markdown {
+  /* 中文正文行高与段落间距 */
+  line-height: 1.85;
+}
+
+.markdown p,
+.markdown li {
+  letter-spacing: 0.01em;
+}
+
+/* 代码块内保持原样，避免中文折行奇怪 */
+pre code {
+  letter-spacing: normal;
+}

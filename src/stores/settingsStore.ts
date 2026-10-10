@@ -22,7 +22,7 @@ interface SettingsState {
 }
 
 const DEFAULT_MODELS_CONFIG: ModelsConfig = {
-  defaultModel: 'glm-4-flash',
+  defaultModel: 'glm-4.5-flash',
   models: [...ZHIPU_PRESETS, ...DEEPSEEK_PRESETS],
 }
 

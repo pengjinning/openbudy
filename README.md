@@ -76,7 +76,7 @@ pnpm electron:dev    # Electron desktop app
 ### Configure AI Model
 
 1. Launch the app
-2. Open **Settings → Zhipu API Key** and paste your API key from the [Zhipu Open Platform](https://open.bigmodel.cn/usercenter/apikeys) — GLM-4-Flash / GLM-4.6 / GLM-4.7 / GLM-5.3 presets are built in via the OpenAI-compatible endpoint
+2. Open **Settings → Zhipu API Key** and paste your API key from the [Zhipu Open Platform](https://open.bigmodel.cn/usercenter/apikeys) — glm-4.5-flash / GLM-4.6 / GLM-4.7 / GLM-5.3 presets are built in via the OpenAI-compatible endpoint
 3. Optionally add other OpenAI-compatible providers (DeepSeek, Moonshot, ...) under **Settings → Models**, or switch the default model
 4. Create a task and chat with the AI right inside the app!
 
@@ -215,6 +215,8 @@ All tools use JSON Schema definitions compatible with OpenAI Function Calling.
 ---
 
 ## 🧑‍💻 Development
+
+> 📚 **Tutorial**: This repo ships a hands-on Chinese tutorial — "Building an Agent with TypeScript + Electron + pi-ai" (14 chapters). Run `pnpm docs:dev` to read it locally (see [docs/readme.md](docs/readme.md)).
 
 ```bash
 # Type check

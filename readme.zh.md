@@ -76,7 +76,7 @@ pnpm electron:dev    # Electron 桌面应用
 ### 配置 AI 模型
 
 1. 启动应用
-2. 打开 **设置 → 智谱 API Key**，填入 [智谱开放平台](https://open.bigmodel.cn/usercenter/apikeys) 的 API Key（内置 GLM-4-Flash / GLM-4.6 / GLM-4.7 / GLM-5.3 预设，请求走 OpenAI 兼容接口）
+2. 打开 **设置 → 智谱 API Key**，填入 [智谱开放平台](https://open.bigmodel.cn/usercenter/apikeys) 的 API Key（内置 glm-4.5-flash / GLM-4.6 / GLM-4.7 / GLM-5.3 预设，请求走 OpenAI 兼容接口）
 3. 也可在 **设置 → 模型管理** 添加其他 OpenAI 兼容服务（DeepSeek、Moonshot 等），或切换默认模型
 4. 开始创建任务，在客户端内直接与 AI 流式对话！
 
@@ -215,6 +215,8 @@ DELIVER  交付  →  汇总结果、生成产物、更新状态
 ---
 
 ## 🧑‍💻 开发命令
+
+> 📚 **实战教程**：本仓库包含一套完整的中文实战教程《用 TypeScript + Electron + pi-ai 构建 Agent》，运行 `pnpm docs:dev` 即可阅读（详见 [docs/readme.md](docs/readme.md)）。
 
 ```bash
 # TypeScript 类型检查

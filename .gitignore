@@ -1,3 +1,9 @@
 node_modules/
 dist/
+dist-electron/
+release/
+docs/node_modules/
+docs/.docusaurus/
+docs/build/
 .env
+cicd/

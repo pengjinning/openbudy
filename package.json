@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "electron:dev": "vite",
     "electron:build": "vite build && electron-builder",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "docs:dev": "pnpm --dir docs start",
+    "docs:build": "pnpm --dir docs build"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -1,0 +1,39 @@
+{
+  "name": "openbudy-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenBudy Agent 实战教程文档站点（Docusaurus）",
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "dev": "pnpm start",
+    "start": "docusaurus start --port 3005",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve --port 3005"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.8.0",
+    "@docusaurus/preset-classic": "^3.8.0",
+    "@docusaurus/theme-mermaid": "^3.8.0",
+    "@mdx-js/react": "^3.1.0",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.8.0",
+    "@docusaurus/tsconfig": "^3.8.0",
+    "@types/react": "^18.3.12",
+    "typescript": "^5.5.3"
+  },
+  "browserslist": {
+    "production": [">0.5%", "not dead", "not op_mini all"],
+    "development": ["last 3 versions", "not op_mini all"]
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

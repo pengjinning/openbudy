@@ -30,8 +30,8 @@ import type { LLMChunk, LLMMessage } from './client'
 /** 智谱开放平台预设（OpenAI 兼容接口，非 Coding Plan 专用端点） */
 export const ZHIPU_PRESETS: ModelConfig[] = [
   {
-    id: 'glm-4-flash',
-    name: 'GLM-4-Flash（免费）',
+    id: 'glm-4.5-flash',
+    name: 'GLM-4.5-Flash（免费）',
     provider: 'zhipu',
     baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
     apiKey: '',
